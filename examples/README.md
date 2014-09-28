@@ -9,4 +9,4 @@ Descriptions
 to get results and reply to clients
 
 **Broadcast**
-* Multiple clients tell agent, who broadcast queries to consumers
+* Multiple clients tell agent, who broadcasts queries to consumers
