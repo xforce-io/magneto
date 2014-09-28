@@ -5,7 +5,7 @@ include_directories(
   )
 
 link_directories(
-  /usr/local/lib/
+  /usr/lib/
   magneto/lib/magneto/
 )
 

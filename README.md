@@ -12,10 +12,11 @@ magneto
 
 
 *Dependencies*
-* log4cplus
+* log4cplus, version 1.1 or higher
 
 *Usage*
 * cd magneto && mkdir build && cd build
+* add include directory of log4cplus into parameters of "include_directories" 
 * cmake ../ && make clean && make -j4 -s
 * include files and lib are created in "magneto/" directory
 * enjoy

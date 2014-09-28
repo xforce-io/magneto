@@ -295,12 +295,12 @@
 
   #ifndef MAG_BUG
   #define MAG_BUG(expr) \
-    ;
+    FATAL("bug_on["__FILE__":" << __LINE__ << "]");
   #endif
 
   #ifndef MAG_BUG_FATAL
   #define MAG_BUG_FATAL(expr, str) \
-    ;
+    FATAL("bug_on["__FILE__":" << __LINE__ << "]");
   #endif
 
 #endif
