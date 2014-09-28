@@ -285,22 +285,13 @@
     MAG_ASSERT(!(expr))
   #endif
 
-  #ifndef MAG_BUG_FATAL
-  #define MAG_BUG_FATAL(expr, str) \
-    FATAL(str); \
-    MAG_BUG(expr)
-  #endif
-
 #else
 
   #ifndef MAG_BUG
   #define MAG_BUG(expr) \
-    FATAL("bug_on["__FILE__":" << __LINE__ << "]");
-  #endif
-
-  #ifndef MAG_BUG_FATAL
-  #define MAG_BUG_FATAL(expr, str) \
-    FATAL("bug_on["__FILE__":" << __LINE__ << "]");
+    if (unlikely(expr)) { \
+      FATAL("bug_on["__FILE__":" << __LINE__ << "]"); \
+    }
   #endif
 
 #endif
