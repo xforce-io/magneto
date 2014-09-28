@@ -1,0 +1,14 @@
+ROOTDIR('../../../../')
+CPPFLAGS('-g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -DIDX_LOG_STDOUT -std=c++11 -O2')
+APP('bin/pingpong', 
+      ' src/*.cpp '
+   )
+
+INCPATHS('/usr/local/include src/')
+LIBPATHS('/usr/local/lib')
+LDFLAGS('-lpthread -lrt -lz')
+
+DEP('lib/public')
+DEP('lib/log')
+DEP('lib/monitor')
+DEP('projects/magneto')

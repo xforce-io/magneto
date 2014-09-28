@@ -1,0 +1,3 @@
+notice|src/monitor/details/monitor_core.cpp:114 | start_monitor_core_thread
+notice|src/monitor/output_agents/details/output_agents.cpp:70 | output_agents_thread_start
+notice|[log] main_thread_exit
