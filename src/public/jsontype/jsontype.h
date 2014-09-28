@@ -161,7 +161,7 @@ class JsonType {
  private:
   SharedJsonVal* shared_json_val_;
 
-  friend SharedJsonVal;
+  friend class SharedJsonVal;
 };
 
 SharedJsonVal::SharedJsonVal(JsonValType::Type type) {

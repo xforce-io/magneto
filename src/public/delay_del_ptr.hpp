@@ -87,7 +87,7 @@ void DelayDelPtr<Obj>::Change(Obj& obj) {
 template <typename Obj>
 const Obj* DelayDelPtr<Obj>::Get(size_t version) const {
   size_t cur_version=version_;
-  if (likely(cur_version==version || -1==version)) {
+  if (likely(cur_version==version || size_t(-1) == version)) {
     return obj_;
   }
 

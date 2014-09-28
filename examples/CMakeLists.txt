@@ -28,22 +28,22 @@ add_executable(broadcast/bin/broadcast
   broadcast/src/broadcast.cpp)
 
 target_link_libraries(pingpong/bin/pingpong
+  log4cplus
   pthread
   rt
-  z
-  log4cplus)
+  z)
 
 target_link_libraries(cluster_agent/bin/cluster_agent
+  log4cplus
   pthread
   rt
-  z
-  log4cplus)
+  z)
 
 target_link_libraries(broadcast/bin/broadcast
+  log4cplus
   pthread
   rt
-  z
-  log4cplus)
+  z)
 
 add_custom_command(TARGET pingpong/bin/pingpong  
   PRE_BUILD

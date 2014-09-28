@@ -25,40 +25,6 @@ struct SameType {
   enum {R = std::__are_same<A, B>::__value};
 };
 
-/*
- * Range
- */
-template <typename T>
-struct Range {
-  static bool Check(int64_t int64) { 
-    return int64 >= std::numeric_limits<T>::min() 
-      && int64 <= std::numeric_limits<T>::max();
-  }
-};
-
-template <>
-struct Range<size_t> {
-  static bool Check(int64_t int64) { return int64>=0; }
-};
-
-/*
- * IsArithmetic
- */
-template <typename T>
-struct IsArithmetic {
-  enum {R = std::__is_arithmetic<T>::__value};
-};
-
-/* 
- * IsPOD
- * notice : this definition is not valid, should be update with is_pod when
- *    comiler supports c++0x
- */
-template <typename T>
-struct IsPOD {
-  enum {R = IsArithmetic<T>::R};
-};
-
 template<typename T>
 struct ReflectorF {
   const T& operator() (const T& t) const { return t; }
