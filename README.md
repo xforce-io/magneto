@@ -15,13 +15,14 @@ magneto
 * log4cplus, version 1.1 or higher
 
 *Usage*
+* add include directory of log4cplus into parameters of "include_directories" in magneto/CMakeLists.txt
 * cd magneto && mkdir build && cd build
-* add include directory of log4cplus into parameters of "include_directories" 
 * cmake ../ && make clean && make -j4 -s
 * include files and lib are created in "magneto/" directory
 * enjoy
 
 *Features in the future (depends on needs)*
-* Supporte http protocol 
-* Enhance redis protocol
+* Supporte http protocol codec
+* Services.conf hot loaded supported
+* Enhance redis protocol codec
 * Further optimized
