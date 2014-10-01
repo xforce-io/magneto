@@ -51,6 +51,7 @@ class ProtocolReadRapid : public ProtocolRead {
 
   inline const RapidHeader* Header() const;
   inline const char* Buf() const;
+  inline size_t Len() const { return Header()->size; }
 
   virtual ~ProtocolReadRapid() {}
 

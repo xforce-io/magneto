@@ -20,10 +20,9 @@ class AgentSlave {
   typedef EventsDriver<EventCtx, SpinLock> Driver;
 
  private: 
-  static const int kMaxNumEventsProcessedOnce=10000;
-  static const size_t kMaxNumMailsProcessedOnce=1000;
+  static const size_t kMaxNumMailsProcessedOnce=100000;
   static const size_t kBacklog=1024;
-  static const size_t kThreholdSenderNotify=10;
+  static const size_t kThreholdSenderNotify=3;
 
  public:
   AgentSlave();

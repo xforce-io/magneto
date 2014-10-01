@@ -36,6 +36,8 @@ void NaiveHandler(void*) {
 }
 
 TEST(test_magneto, all) {
+  LOGGER_SYS_INIT("conf/log.conf")
+
   std::vector< std::pair<magneto::RoutineHandler, size_t> > routine_handlers;
   routine_handlers.push_back(std::make_pair(NaiveHandler, 30));
   bool end=false;

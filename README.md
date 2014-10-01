@@ -3,6 +3,9 @@ magneto
 
 ***A c++ network framework***
 
+*Notice*
+* First tag version is expected to be released in november
+
 *Features*
 * Coroutine based design, which lets you to write asyc network logics in a sync fashion  
 * Parallel downstream visit Apis and health check mechanism are supported
@@ -25,4 +28,5 @@ magneto
 * Supporte http protocol codec
 * Services.conf hot loaded supported
 * Enhance redis protocol codec
-* Further optimized
+* Further optimizations
+

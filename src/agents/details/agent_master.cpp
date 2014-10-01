@@ -102,7 +102,7 @@ void AgentMaster::Process_() {
   }
 
   if (1==round) {
-    usleep(1);
+    usleep(100);
   }
 }
 

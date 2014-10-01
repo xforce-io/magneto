@@ -11,6 +11,7 @@
 namespace magneto {
 
 AgentSlave::AgentSlave() :
+  events_driver_(false),
   conns_mgr_(NULL),
   pool_event_ctxs_(NULL),
   pool_sessions_(NULL),

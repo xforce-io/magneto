@@ -136,7 +136,7 @@ void Scheduler::Process_() {
   }
 
   if (!round && task_queue_.empty()) {
-    usleep(1);
+    usleep(10);
     return;
   }
 

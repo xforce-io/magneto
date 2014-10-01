@@ -307,8 +307,6 @@
   MAG_BUG(expr)
 #endif
 
-static const size_t kMaxSizeMemProfilekey=512;
-
 #ifdef MEMPROFILE
 
 #define MAG_NEW(member, constructor) \
@@ -456,12 +454,6 @@ static const size_t kMaxSizeMemProfilekey=512;
   if (unlikely(!Super::init_) && unlikely(!Init_())) { return ret; }
 #endif
 
-/*
- * static assert, from loki
- */
-template<int> struct CompileTimeError;
-template<> struct CompileTimeError<true> {};
-
 #ifndef MAG_CONCAT
 #define MAG_CONCAT(X, Y) X##Y
 #endif
@@ -485,22 +477,36 @@ template<> struct CompileTimeError<true> {};
 /*
  * CAS
  */
+#ifndef CAS
 #define CAS(ptr, oldval, newval) \
   __sync_val_compare_and_swap(ptr, oldval, newval)
+#endif
 
+#ifndef CAS_bool
 #define CAS_bool(ptr, oldval, newval) \
   __sync_bool_compare_and_swap(ptr, oldval, newval)
+#endif
 
 /*
  * memory barriers
  */
-#define MB() __asm__ __volatile__("mfence":::"memory");
-
+#ifndef MB
+#define MB() \
+  __asm__ __volatile__("mfence":::"memory");
+#endif
 
 namespace magneto {
 
 LOGGER_EXTERN_DECL(magneto);
 
 class NoneType {};
+
+static const size_t kMaxSizeMemProfilekey=512;
+
+/*
+ * static assert, from loki
+ */
+template<int> struct CompileTimeError;
+template<> struct CompileTimeError<true> {};
 
 }

@@ -6,6 +6,10 @@
 #include "../schedulers/schedulers.h"
 #include "../agents/agents.h"
 
+#ifdef MONITOR
+#include "lib/public/public.h"
+#endif
+
 namespace magneto {
 
 MagnetoBase::MagnetoBase() :
@@ -24,9 +28,10 @@ bool MagnetoBase::Init(
 
   InitSignals_();
 
+  int ret;
 #ifdef MONITOR
-  bool ret = GMonitor::Init(conf_service_dir + "/monitor.conf");
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_init_monitor")
+  ret = xlib::pub::GMonitor::Init(conf_service_dir + "/monitor.conf");
+  MAG_FAIL_HANDLE_FATAL(false==ret, "fail_init_monitor")
 #endif
 
 #ifdef MEMPROFILE
@@ -34,7 +39,7 @@ bool MagnetoBase::Init(
 #endif
 
   MAG_NEW(confs_, Confs)
-  int ret = confs_->Init(conf_service_dir);
+  ret = confs_->Init(conf_service_dir);
   MAG_FAIL_HANDLE_FATAL(!ret, "fail_load_versioned_conf_services[" << conf_service_dir << "]")
 
   NOTICE("succ_init_conf[" << conf_service_dir << "]");
@@ -93,7 +98,7 @@ MagnetoBase::~MagnetoBase() {
 #endif
 
 #ifdef MONITOR
-  GMonitor::Tini();
+  xlib::pub::GMonitor::Tini();
 #endif
 }
 

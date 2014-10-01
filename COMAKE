@@ -1,5 +1,5 @@
-ROOTDIR('../../')
-CPPFLAGS('-g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -DIDX_LOG_STDOUT -DDEBUG_MODE -std=c++11 -O2')
+ROOTDIR('../../xlib')
+CPPFLAGS('-g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -DDEBUG_MODE -std=c++11 -O2')
 LIB('lib/magneto', 
       ' src/details/*.cpp '
       ' src/public/details/*.cpp '
@@ -9,15 +9,18 @@ LIB('lib/magneto',
       ' src/protocols/details/*.cpp '
       ' src/protocols/redis/details/*.cpp '
       ' src/protocols/rapid/details/*.cpp '
+      ' src/protocols/ping/details/*.cpp '
       ' src/schedulers/details/*.cpp '
       ' src/confs/details/*.cpp '
-      ' src/magneto/details/*.cpp '
+      ' src/public/details/*.cpp '
+      ' src/public/jsontype/details/*.cpp '
+      ' src/public/mpsc_fixed_pipe/details/*.cpp '
+      ' src/public/thread_privacy/details/*.cpp '
+      ' src/public/time/details/*.cpp '
    )
 
 INCPATHS('/usr/local/include src/')
 LIBPATHS('/usr/local/lib')
 LDFLAGS('-lpthread -lrt -lz')
 
-#DEP('lib/monitor')
-
-OUTPUT_HEADERS_PREFIX('projects/magneto')
+DEP('lib/public')

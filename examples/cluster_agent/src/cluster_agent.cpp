@@ -5,7 +5,7 @@ LOGGER_IMPL(magneto, "magneto")
 }
 
 static const size_t kNumClients=50;
-static const size_t kNumReqs=100000;
+static const size_t kNumReqs=1000000;
 int num_reqs=kNumReqs;
 int num_finished_clients=kNumClients;
 int succ=0;

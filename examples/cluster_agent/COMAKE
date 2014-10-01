@@ -1,14 +1,13 @@
-ROOTDIR('../../../../')
-CPPFLAGS('-g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -DIDX_LOG_STDOUT -fno-builtin-memcmp -std=c++11 -O2')
+ROOTDIR('../../../../xlib/')
+CPPFLAGS('-g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -fno-builtin-memcmp -std=c++11 -O2')
 APP('bin/cluster_agent', 
       ' src/*.cpp '
    )
 
 INCPATHS('/usr/local/include src/')
 LIBPATHS('/usr/local/lib')
-LDFLAGS('-lpthread -lrt -lz')
+LDFLAGS('-lpthread -lrt -lz -llog4cplus')
 
 DEP('lib/public')
-DEP('lib/log')
 DEP('lib/monitor')
-DEP('projects/magneto')
+DEP('../github/magneto')

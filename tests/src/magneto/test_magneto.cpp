@@ -29,6 +29,8 @@ void PingHandler(const magneto::ProtocolRead& protocol_read, void*) {
 }
 
 TEST(test_magneto, all) {
+  LOGGER_SYS_INIT("conf/log.conf")
+
   bool end=false;
   bool ret = server.Init("data/magneto/test_magneto/conf/", &PingHandler, NULL, NULL, end);
   ASSERT_TRUE(ret);

@@ -19,7 +19,7 @@ class Scheduler {
  
  private:
   static const size_t kMaxTaskProcessedOneTime=100;
-  static const size_t kThreholdSenderNotify=5;
+  static const size_t kThreholdSenderNotify=0;
 
  public:
   Scheduler();
