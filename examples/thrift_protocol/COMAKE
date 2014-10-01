@@ -1,0 +1,13 @@
+ROOTDIR('../../../../xlib/')
+CPPFLAGS('-g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -DMONITOR -std=c++11 -O2')
+APP('bin/pingpong',
+      ' src/*.cpp '
+   )
+
+INCPATHS('/usr/local/include src/')
+LIBPATHS('/usr/local/lib')
+LDFLAGS('-lpthread -lrt -lz -llog4cplus')
+
+DEP('lib/public')
+DEP('lib/monitor')
+DEP('../github/magneto')

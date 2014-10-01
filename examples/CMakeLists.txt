@@ -91,10 +91,10 @@ add_custom_command(TARGET broadcast/bin/broadcast
   COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/broadcast/log
   COMMAND cp -rf ${BROADCAST_PRJ_PATH}/conf/* ${EXP_OUTPUT_PATH}/broadcast/conf
 )
-
-############################
-#     thrift protocol 
-############################
+#
+#############################
+##     thrift protocol 
+#############################
 #set(THRIFT_PROTOCOL_PRJ_PATH ../../examples/thrift_protocol/)
 #
 #add_executable(thrift_protocol/bin/thrift_protocol
