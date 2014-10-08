@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.6.4)
 
 project(magneto)
 
@@ -14,7 +14,7 @@ set(MAG_SRC_DIR ../src/)
 
 FILE(GLOB_RECURSE MAG_FILES "src/*.cpp")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing")
 
 add_library(magneto
   ${MAG_FILES})
@@ -22,7 +22,9 @@ add_library(magneto
 target_link_libraries(magneto
   pthread
   rt
-  z)
+  z
+  #thrift
+  )
 
 add_subdirectory(examples)
 

@@ -11,7 +11,7 @@ class ProtocolWriteRedis : public ProtocolWrite {
  public:
   Protocol::Category GetCategory() const { return kCategory; }
 
-  inline void Reset(const char* buf, size_t size);
+  inline void Reset(const Buf& buf);
   bool Encode();
   inline int Write(int fd);
 
@@ -39,8 +39,8 @@ class ProtocolReadRedis : public ProtocolRead {
   int Read(int fd);
   bool Decode() { return true; }
 
-  const char* Buf() const { return out_.data(); }
-  size_t Len() const { return out_.size(); }
+  const char* Data() const { return out_.data(); }
+  size_t Size() const { return out_.size(); }
 
   virtual ~ProtocolReadRedis();
 
@@ -50,8 +50,8 @@ class ProtocolReadRedis : public ProtocolRead {
   char* tmpbuf_;
 };
 
-void ProtocolWriteRedis::Reset(const char* buf, size_t /*size*/) {
-  in_.assign(buf);
+void ProtocolWriteRedis::Reset(const Buf& buf) {
+  in_.assign(buf.first.Data());
   out_pos_=0;
 }
 

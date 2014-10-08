@@ -13,7 +13,7 @@ void RapidHandler(const ProtocolRead& protocol_read, void* args) {
       WARN("ret[" << protocol_read_rapid.Len() << "]");
     }
 
-    Magneto::Magneto::Buf buf = std::make_pair(protocol_read_rapid.Buf(), 1);
+    Magneto::Magneto::Buf buf = std::make_pair(protocol_read_rapid.Data(), 1);
     std::vector<const Magneto::Magneto::Buf*> bufs;
     bufs.push_back(&buf);
     bufs.push_back(&buf);
@@ -34,7 +34,7 @@ void RapidHandler(const ProtocolRead& protocol_read, void* args) {
 
     if (0==ret) {
       for (size_t i=0; i < results.size(); ++i) {
-        resp += ( 0 == results[i].first ? results[i].second->Buf()[0] : 0);
+        resp += ( 0 == results[i].first ? results[i].second->Data()[0] : 0);
       }
     } else {
       resp=0;

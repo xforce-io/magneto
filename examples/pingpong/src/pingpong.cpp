@@ -1,13 +1,13 @@
 #include "magneto.h"
 
 namespace magneto {
-LOGGER_IMPL(magneto, "magneto")
+LOGGER_IMPL(magneto_logger, "magneto")
 }
 
 bool end=false;
 
 void PingHandler(const magneto::ProtocolRead& /*protocol_read*/, void* args) {
-  RCAST<magneto::Magneto*>(args)->WriteBack(std::make_pair("p", 1), 100);
+  RCAST<magneto::Magneto*>(args)->WriteBack(magneto::Buf(magneto::Slice("p", 1), NULL), 100);
 }
 
 void ClientHandler(void* args) {
@@ -18,7 +18,7 @@ void ClientHandler(void* args) {
   magneto::ProtocolRead* response;
   magneto::Timer timer;
   for (size_t i=0; i<kNumReqs; ++i) {
-    int ret = client.SimpleTalk("downstream", std::make_pair("p", 1), 100, response);
+    int ret = client.SimpleTalk("downstream", magneto::Buf(magneto::Slice("p", 1), NULL), 100, response);
     if (magneto::ErrorNo::kOk == ret) ++succ;
     client.FreeTalks();
   }
@@ -32,16 +32,16 @@ int main() {
 
   magneto::Magneto* server = new magneto::Magneto;
   magneto::Magneto* client = new magneto::Magneto;
-  magneto::Magneto::RoutineItems client_handle;
+  magneto::RoutineItems client_handle;
 
   /* init server */
   int ret = server->Init("conf/confs_server/", &PingHandler, NULL, server, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto, !ret, "fail_init_server")
+  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_server")
 
   /* init client */
   client_handle.push_back(std::make_pair(ClientHandler, 100));
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto, !ret, "fail_init_client")
+  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_client")
 
   delete client; delete server;
   return 0;

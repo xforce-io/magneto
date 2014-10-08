@@ -2,7 +2,7 @@
 #include "../../../src/magneto.h"
 
 namespace magneto {
-LOGGER_IMPL(magneto, "magneto")
+LOGGER_IMPL(magneto_logger, "magneto")
 }
 
 magneto::Magneto server;

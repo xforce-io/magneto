@@ -39,7 +39,7 @@ class Session {
   inline bool FinishTalk(bool succ, Talk& talk);
   
  private:
-  void ResetTalk_(Talk& talk);
+  void ResetTalk_(Talk& talk, bool is_retry);
 
  private:
   //const
@@ -80,7 +80,8 @@ bool Session::FinishTalk(bool succ, Talk& talk) {
 
       talk.fd = 0;
       talk.error = ErrorNo::kOk;
-      ResetTalk_(talk);
+      DEBUG("retry");
+      ResetTalk_(talk, true);
       if (ErrorNo::kOk == talk.error) {
         --num_talks_done_;
       } else {

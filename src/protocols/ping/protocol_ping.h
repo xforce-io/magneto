@@ -11,7 +11,7 @@ class ProtocolWritePing : public ProtocolWrite {
  public:
   Protocol::Category GetCategory() const { return kCategory; }
 
-  void Reset(const char* /*buf*/, size_t /*size*/) {}
+  void Reset(const Buf& /*buf*/) {}
   bool Encode() { return true; }
   int Write(int fd);
 
@@ -37,8 +37,8 @@ class ProtocolReadPing : public ProtocolRead {
   bool Decode() { return true; }
   int Read(int fd);
 
-  const char* Buf() const { return &buffer_; }
-  size_t Len() const { return sizeof(buffer_); }
+  const char* Data() const { return &buffer_; }
+  size_t Size() const { return sizeof(buffer_); }
 
   virtual ~ProtocolReadPing() {}
 

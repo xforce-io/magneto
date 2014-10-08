@@ -21,18 +21,19 @@ class ProtocolWriteRapid : public ProtocolWrite {
  public:
   Protocol::Category GetCategory() const { return kCategory; }
 
-  inline void Reset(const char* buf, size_t size);
+  inline void Reset(const Buf& buf);
   inline bool Encode();
   int Write(int fd);
 
   virtual ~ProtocolWriteRapid() {}
 
  private:
-  const char* buf_;
-  size_t size_;
-  bool write_header_;
+  Slice buf_;
+
   RapidHeader header_;
-  iovec tmp_iov_[2];
+
+  iovec tmp_iovs_[2];
+  size_t tmp_num_iovs_;
 };
 
 class ProtocolReadRapid : public ProtocolRead {
@@ -50,8 +51,8 @@ class ProtocolReadRapid : public ProtocolRead {
   inline bool Decode();
 
   inline const RapidHeader* Header() const;
-  inline const char* Buf() const;
-  inline size_t Len() const { return Header()->size; }
+  inline const char* Data() const;
+  size_t Size() const { return Header()->size; }
 
   virtual ~ProtocolReadRapid() {}
 
@@ -60,21 +61,20 @@ class ProtocolReadRapid : public ProtocolRead {
   bool read_header_;
 };
 
-void ProtocolWriteRapid::Reset(const char* buf, size_t size) {
-  buf_=buf;
-  size_=size;
+void ProtocolWriteRapid::Reset(const Buf& buf) {
+  buf_ = buf.first;
 
-  write_header_=true;
-  tmp_iov_[0].iov_base = RCAST<char*>(&header_);
-  tmp_iov_[0].iov_len = sizeof(header_);
-  tmp_iov_[1].iov_base = CCAST<char*>(buf_);
-  tmp_iov_[1].iov_len = size_;
+  tmp_iovs_[0].iov_base = RCAST<char*>(&header_);
+  tmp_iovs_[0].iov_len = sizeof(header_);
+  tmp_iovs_[1].iov_base = CCAST<char*>(buf_.Data());
+  tmp_iovs_[1].iov_len = buf_.Size();
+  tmp_num_iovs_=2;
 }
 
 bool ProtocolWriteRapid::Encode() {
-  header_.size = htonl(size_);
   header_.magic = htons(RapidHeader::kMagic);
   header_.version = htons(0);
+  header_.size = htonl(buf_.Size());
   return true;
 }
 
@@ -108,7 +108,7 @@ const RapidHeader* ProtocolReadRapid::Header() const {
   return RCAST<const RapidHeader*>(buffer_.Start()); 
 }
 
-const char* ProtocolReadRapid::Buf() const { 
+const char* ProtocolReadRapid::Data() const { 
   return buffer_.Start() + sizeof(RapidHeader); 
 }
 

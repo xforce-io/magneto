@@ -15,7 +15,6 @@ class Scheduler {
   typedef Scheduler Self;
   typedef MPSCFixedPipe<bool> Mailbox; 
   typedef std::list<Msg*> TaskQueue;
-  typedef std::pair<RoutineHandler, size_t> RoutineItem;
  
  private:
   static const size_t kMaxTaskProcessedOneTime=100;

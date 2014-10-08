@@ -4,7 +4,7 @@ magneto
 ***A c++ network framework***
 
 *Notice*
-* First tag version is expected to be released in november
+* First release branch is expected to be released in november
 
 *Features*
 * Coroutine based design, which lets you to write asyc network logics in a sync fashion  
@@ -15,7 +15,7 @@ magneto
 
 
 *Dependencies*
-* log4cplus, version 1.1 or higher
+* log4cplus, version 1.1 or higher (thrift lib if you need thrift support)
 
 *Usage*
 * add include directory of log4cplus into parameters of "include_directories" in magneto/CMakeLists.txt
@@ -29,4 +29,3 @@ magneto
 * Services.conf hot loaded supported
 * Enhance redis protocol codec
 * Further optimizations
-

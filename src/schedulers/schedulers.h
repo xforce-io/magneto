@@ -10,10 +10,6 @@ class Agents;
 
 class Schedulers {
  public: 
-  typedef std::pair<RoutineHandler, size_t> RoutineItem;
-  typedef std::vector< std::pair<RoutineHandler, size_t> > RoutineItems;
-
- public: 
   bool Init(
       const Confs& confs,
       Agents& agents,

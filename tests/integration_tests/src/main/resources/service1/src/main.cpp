@@ -14,9 +14,9 @@ void RapidHandler(const ProtocolRead& protocol_read, void* args) {
 
   char resp;
   if ("plus" == protocol_read.GetReqInfo().listen_addr->name) {
-    resp = *(protocol_read_rapid.Buf()) + 1;
+    resp = *(protocol_read_rapid.Data()) + 1;
   } else {
-    resp = *(protocol_read_rapid.Buf()) - 1;
+    resp = *(protocol_read_rapid.Data()) - 1;
   }
 
   std::pair<const char*, size_t> buf = std::make_pair(&resp, 1);

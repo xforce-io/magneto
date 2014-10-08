@@ -24,7 +24,7 @@ bool Session::Reset(ucontext_t& biz_ctx, BizProcedure& biz_procedure, std::vecto
 
   for (size_t i=0; i < talks_->size(); ++i) {
     (*talks_)[i].error = ErrorNo::kOk;
-    ResetTalk_((*talks_)[i]);
+    ResetTalk_((*talks_)[i], false);
     if (ErrorNo::kOk != (*talks_)[i].error) {
       ++num_talks_done_;
     }
@@ -32,7 +32,7 @@ bool Session::Reset(ucontext_t& biz_ctx, BizProcedure& biz_procedure, std::vecto
   return num_talks_done_ != talks_->size();
 }
 
-void Session::ResetTalk_(Talk& talk) {
+void Session::ResetTalk_(Talk& talk, bool is_retry) {
   if (0 == talk.fd) {
     std::pair<int, bool> ret = conns_mgr_->GetFd(*(talk.service), talk.fail_remotes, talk.remote);
     if (ret.first > 0) {
@@ -46,12 +46,24 @@ void Session::ResetTalk_(Talk& talk) {
       talk.fd = -1;
       talk.error = ErrorNo::kBroken;
       has_failure_=true;
+      DEBUG("fail_get_fd");
       return;
     }
   } else if (talk.fd < 0) {
     MAG_BUG(true)
     has_failure_=true;
     return;
+  }
+
+  if (is_retry && NULL != talk.protocol_write) {
+    talk.protocol_write->Reset(*(talk.buf));
+    bool ret = talk.protocol_write->Encode();
+    if (!ret) {
+      talk.error = ErrorNo::kEncode;
+      has_failure_=true;
+      DEBUG("fail_encode_write_buf");
+      return;
+    }
   }
 
   EventCtx* event_ctx = pool_event_ctxs_->Get();
@@ -64,6 +76,7 @@ void Session::ResetTalk_(Talk& talk) {
   if (unlikely(timeleft_ms<=0)) {
     talk.error = ErrorNo::kTimeout;
     has_failure_=true;
+    DEBUG("timeout_when_make_session timeleft_ms[" << timeleft_ms << "]");
     return;
   }
 
@@ -92,7 +105,7 @@ void Session::ResetTalk_(Talk& talk) {
   if (unlikely(!ret)) {
     WARN("fail_to_reg_event fd[" << talk.fd << "] errno[" << strerror(errno) << "]");
     IOHelper::Close(talk.fd);
-    talk.fd=-1;
+    talk.fd = -1;
     talk.error = ErrorNo::kOther;
     has_failure_=true;
   }

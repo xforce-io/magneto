@@ -5,7 +5,7 @@
 using namespace magneto;
 
 namespace magneto {
-LOGGER_IMPL(magneto, "magneto")
+LOGGER_IMPL(magneto_logger, "magneto")
 }
 
 int main(int argc, char** argv) {

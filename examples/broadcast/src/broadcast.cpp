@@ -1,7 +1,7 @@
 #include "magneto.h"
 
 namespace magneto {
-LOGGER_IMPL(magneto, "magneto")
+LOGGER_IMPL(magneto_logger, "magneto")
 }
 
 static const size_t kNumClients=50;
@@ -16,7 +16,7 @@ void ClientHandler(void* args) {
   magneto::Timer timer;
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
   while ( __sync_sub_and_fetch(&num_reqs, 1) >= 0 ) {
-    client.Write("agent", std::make_pair(RCAST<const char*>(&kInput), 1), 100);
+    client.Write("agent", magneto::Buf(magneto::Slice(RCAST<const char*>(&kInput), 1), NULL), 100);
     client.FreeTalks();
   }
 
@@ -33,20 +33,20 @@ void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
   if (magneto::Protocol::kRapid == protocol_read.GetCategory()) {
     const magneto::ProtocolReadRapid& protocol_read_rapid = SCAST<const magneto::ProtocolReadRapid&>(protocol_read);
 
-    magneto::Magneto::Buf buf = std::make_pair(protocol_read_rapid.Buf(), 1);
-    magneto::Magneto::Bufs bufs;
+    magneto::Buf buf(magneto::Slice(protocol_read_rapid.Data(), 1), NULL);
+    magneto::Bufs bufs;
     bufs.push_back(&buf);
     bufs.push_back(&buf);
-    magneto::Magneto::Errors errors;
+    magneto::Errors errors;
     agent.Write("consumers", bufs, 100, errors);
   } else if (magneto::Protocol::kPing == protocol_read.GetCategory()) {
-    agent.WriteBack(std::make_pair("p", 1), 100);
+    agent.WriteBack(magneto::Buf(magneto::Slice("p", 1), NULL), 100);
   }
 }
 
 void ConsumerService(const magneto::ProtocolRead& protocol_read, void* /*args*/) {
   const magneto::ProtocolReadRapid& protocol_read_rapid = SCAST<const magneto::ProtocolReadRapid&>(protocol_read);
-  if ( kInput == *(protocol_read_rapid.Buf()) ) {
+  if ( kInput == *(protocol_read_rapid.Data()) ) {
     __sync_add_and_fetch(&succ, 1);
   }
 }
@@ -60,20 +60,20 @@ int main() {
   magneto::Magneto* agent = &(servers[1]);
   magneto::Magneto* consumer0 = &(servers[2]);
   magneto::Magneto* consumer1 = &(servers[3]);
-  magneto::Magneto::RoutineItems client_handle;
+  magneto::RoutineItems client_handle;
 
   int ret = agent->Init("conf/agent/", &AgentService, NULL, agent, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto, !ret, "fail_init_agent")
+  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_agent")
 
   ret = consumer0->Init("conf/consumer0/", &ConsumerService, NULL, consumer0, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto, !ret, "fail_init_plus_master")
+  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_plus_master")
 
   ret = consumer1->Init("conf/consumer1/", &ConsumerService, NULL, consumer1, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto, !ret, "fail_init_plus_slave")
+  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_plus_slave")
 
   client_handle.push_back(std::make_pair(ClientHandler, kNumClients));
   ret = client->Init("conf/client/", NULL, &client_handle, client, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto, !ret, "fail_init_client")
+  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_client")
 
   client->Stop();
   delete [] servers;

@@ -13,15 +13,6 @@ class MagnetoBase;
 
 class Magneto {
  public:
-  typedef std::pair<const char*, int> Buf;
-  typedef std::vector<const Buf*> Bufs;
-  typedef std::pair<RoutineHandler, size_t> RoutineItem;
-  typedef std::vector< std::pair<RoutineHandler, size_t> > RoutineItems;
-  typedef std::pair<int, ProtocolRead*> Response;
-  typedef std::vector<Response> Responses;
-  typedef std::vector<int> Errors;
-   
- public:
   Magneto();
 
   bool Init(

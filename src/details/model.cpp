@@ -7,7 +7,7 @@ void Talk::Assign(
     Category category_arg, 
     const Service* service_arg, 
     Protocol::Category protocol_category,
-    const std::pair<const char*, int>* buf,
+    const Buf* buf_arg,
     time_t timeo_ms,
     int fd_arg, 
     const Remote* remote_arg) {
@@ -15,6 +15,7 @@ void Talk::Assign(
   no_talk = no_talk_arg;
   category = category_arg;
   service = service_arg;
+  buf = buf_arg;
   starttime_ms = Time::GetCurrentMsec(false);
   endtime_ms = starttime_ms + timeo_ms;
   error = ErrorNo::kOk;
@@ -30,7 +31,7 @@ void Talk::Assign(
   switch (category) {
     case kWriteAndRead : {
       protocol_write = PoolProtocols::GetWrite(protocol_category);
-      protocol_write->Reset(buf->first, buf->second);
+      protocol_write->Reset(*buf);
       ret = protocol_write->Encode();
       if (true!=ret) {
         PoolProtocols::FreeWrite(protocol_write);
@@ -45,7 +46,7 @@ void Talk::Assign(
     }
     case kWriteOnly : {
       protocol_write = PoolProtocols::GetWrite(protocol_category);
-      protocol_write->Reset(buf->first, buf->second);
+      protocol_write->Reset(*buf);
       ret = protocol_write->Encode();
       if (true!=ret) {
         PoolProtocols::FreeWrite(protocol_write);

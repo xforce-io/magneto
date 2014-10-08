@@ -16,9 +16,6 @@ class BizProcedure;
 
 class IOBasicTPD {
  public:
-  typedef std::pair<const char*, int> Buf;
-
- public:
   IOBasicTPD(const Confs& confs, Agents& agents);
 
   int Write(
@@ -80,9 +77,6 @@ class IOBasicTPD {
 };
 
 class IOBasic {
- public:
-  typedef IOBasicTPD::Buf Buf;
-   
  public:
   IOBasic();
 

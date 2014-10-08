@@ -2,7 +2,7 @@
 #include "../../../src/magneto.h"
 
 namespace magneto {
-LOGGER_IMPL(magneto, "magneto")
+LOGGER_IMPL(magneto_logger, "magneto")
 }
 
 magneto::Magneto server;
@@ -21,7 +21,7 @@ void NaiveHandler(void*) {
   for (;;) {
     int ret = server.SimpleTalk("downstream", std::make_pair("a", 1), 100, response);
     magneto::ProtocolReadRedis* protocol_read_redis = SCAST<magneto::ProtocolReadRedis*>(response);
-    if ( magneto::ErrorNo::kOk == ret && 'b' == protocol_read_redis->Buf()[0] ) {
+    if ( magneto::ErrorNo::kOk == ret && 'b' == protocol_read_redis->Data()[0] ) {
       ++succ;
     } else {
       ++fail;

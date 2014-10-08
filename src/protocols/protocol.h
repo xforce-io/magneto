@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../public/common.h"
+#include "../public_model.h"
 
 namespace magneto {
 
-typedef bool (*FuncReadChecker)(const char* buf, size_t count);
+//typedef bool (*FuncReadChecker)(const char* buf, size_t count);
 
 struct Addr {
  public: 
@@ -19,6 +20,9 @@ struct Protocol {
     kRapid,
     kPing,
     kRedis,
+#ifdef THRIFT_SUPPORT
+    kThrift,
+#endif
     kHttp,
     kInvalid,
   };
@@ -46,7 +50,7 @@ class ProtocolWrite {
  public:
   virtual Protocol::Category GetCategory() const { return kCategory; }
 
-  virtual void Reset(const char* /*buf*/, size_t /*count*/) { return; }
+  virtual void Reset(const Buf& /*buf*/) { return; }
   virtual bool Encode() { return false; }
 
   /*
@@ -83,14 +87,33 @@ class ProtocolRead {
 
   const ReqInfo& GetReqInfo() const { return req_info_; }
   const std::string& GetServiceName() const { return req_info_.listen_addr->name; }
-  virtual const char* Buf() const { return NULL; }
-  virtual size_t Len() const { return 0; }
+  virtual const char* Data() const { return NULL; }
+  virtual size_t Size() const { return 0; }
 
   virtual ~ProtocolRead() {}
  
  public:
   ReqInfo req_info_;
 };
+
+bool Addr::Assign(const std::string& addr_str) {
+  size_t pos_sep = addr_str.find(':');
+  if (std::string::npos == pos_sep) {
+    return false;
+  }
+
+  std::string ip = addr_str.substr(0, pos_sep);
+  std::string port = addr_str.substr(pos_sep+1);
+
+  bzero(&addr, sizeof(addr));
+  addr.sin_family = AF_INET;
+  addr.sin_addr.s_addr = inet_addr(ip.c_str());
+  if (INADDR_NONE == addr.sin_addr.s_addr) {
+    return false;
+  }
+  addr.sin_port = htons(atoi(port.c_str()));
+  return true;
+}
 
 ReqInfo::ReqInfo() :
   listen_addr(NULL) {} 

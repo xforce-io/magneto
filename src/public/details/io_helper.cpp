@@ -110,26 +110,28 @@ int IOHelper::ReadNonBlock(int fd, void* buf, size_t count) {
   }
 }
 
-int IOHelper::WriteVec2NonBlock(int fd, const iovec* iov) {
-  iovec tmp_iov[2];
-  tmp_iov[0] = iov[0];
-  tmp_iov[1] = iov[1];
-
-  size_t current_iov_index=0;
+int IOHelper::WriteVecNonBlock(int fd, iovec* iov, size_t& num_iov) {
   size_t bytes_write=0;
   while (true) {
-    ssize_t tmp_cnt = writev(fd, tmp_iov+current_iov_index, 2-current_iov_index);
+    ssize_t tmp_cnt = writev(fd, iov, num_iov);
     if (tmp_cnt>0) {
       bytes_write+=tmp_cnt;
-      if (bytes_write == tmp_iov[0].iov_len + tmp_iov[1].iov_len) {
+      size_t pos_iov;
+      for (pos_iov=0; pos_iov<num_iov; ++pos_iov) {
+        if (tmp_cnt >= ssize_t(iov[pos_iov].iov_len)) {
+          tmp_cnt -= iov[pos_iov].iov_len;
+        } else {
+          break;
+        }
+      }
+
+      num_iov=num_iov-pos_iov;
+      if (0==num_iov) {
         return bytes_write;
-      } else if (bytes_write >= tmp_iov[0].iov_len) {
-        current_iov_index=1;
-        tmp_iov[1].iov_base = RCAST<char*>(iov[1].iov_base) + bytes_write - iov[0].iov_len; 
-        tmp_iov[1].iov_len = iov[0].iov_len + iov[1].iov_len - bytes_write;
       } else {
-        tmp_iov[0].iov_base = RCAST<char*>(iov[0].iov_base) + bytes_write; 
-        tmp_iov[0].iov_len = iov[0].iov_len - bytes_write;
+        memcpy(iov, iov+pos_iov, num_iov * sizeof(iovec));
+        iov[pos_iov].iov_base = RCAST<char*>(iov[pos_iov].iov_base) + tmp_cnt;
+        iov[pos_iov].iov_len -= tmp_cnt;
       }
     } else if (tmp_cnt<0) {
       if (EAGAIN==errno || EWOULDBLOCK==errno || EINTR==errno) {
@@ -142,6 +144,5 @@ int IOHelper::WriteVec2NonBlock(int fd, const iovec* iov) {
     }
   }
 }
-
 
 }

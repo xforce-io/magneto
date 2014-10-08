@@ -107,12 +107,12 @@
 #define LOGGER_STATIC_DECL_IMPL(logger,name) \
     static log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
 
-#define TRACE(log)  LOG4CPLUS_TRACE(magneto, log)
-#define DEBUG(log) LOG4CPLUS_DEBUG(magneto, log)
-#define NOTICE(log) LOG4CPLUS_INFO(magneto, log)
-#define WARN(log) LOG4CPLUS_WARN(magneto, log)
-#define ERROR(log)  LOG4CPLUS_ERROR(magneto, log)
-#define FATAL(log) LOG4CPLUS_FATAL(magneto, log)
+#define TRACE(log)  LOG4CPLUS_TRACE(magneto_logger, log)
+#define DEBUG(log) LOG4CPLUS_DEBUG(magneto_logger, log)
+#define NOTICE(log) LOG4CPLUS_INFO(magneto_logger, log)
+#define WARN(log) LOG4CPLUS_WARN(magneto_logger, log)
+#define ERROR(log)  LOG4CPLUS_ERROR(magneto_logger, log)
+#define FATAL(log) LOG4CPLUS_FATAL(magneto_logger, log)
 
 #define TRACE_LOG(logger, log)  LOG4CPLUS_TRACE(logger, log)
 #define DEBUG_LOG(logger, log) LOG4CPLUS_DEBUG(logger, log)
@@ -497,7 +497,7 @@
 
 namespace magneto {
 
-LOGGER_EXTERN_DECL(magneto);
+LOGGER_EXTERN_DECL(magneto_logger);
 
 class NoneType {};
 

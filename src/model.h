@@ -107,6 +107,7 @@ struct Talk {
   size_t no_talk;
   Category category;
   const Service* service;
+  const Buf* buf;
   ProtocolWrite* protocol_write;
   ProtocolRead* protocol_read;
   time_t starttime_ms;
@@ -125,30 +126,11 @@ struct Talk {
       Category category, 
       const Service* service, 
       Protocol::Category protocol_category,
-      const std::pair<const char*, int>* buf,
+      const Buf* buf,
       time_t timeo_ms, 
       int fd, 
       const Remote* remote);
 };
-
-bool Addr::Assign(const std::string& addr_str) {
-  size_t pos_sep = addr_str.find(':');
-  if (std::string::npos == pos_sep) {
-    return false;
-  }
-
-  std::string ip = addr_str.substr(0, pos_sep);
-  std::string port = addr_str.substr(pos_sep+1);
-
-  bzero(&addr, sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = inet_addr(ip.c_str());
-  if (INADDR_NONE == addr.sin_addr.s_addr) {
-    return false;
-  }
-  addr.sin_port = htons(atoi(port.c_str()));
-  return true;
-}
 
 ServiceStrategy::Type ServiceStrategy::GetServiceStrategy(const std::string& service_strategy) {
   if (service_strategy == "normal") {

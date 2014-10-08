@@ -23,7 +23,7 @@ class IOHelper {
   inline static bool SetNonBlock(int fd);
   static int WriteNonBlock(int fd, const void* buf, size_t count);
   static int ReadNonBlock(int fd, void* buf, size_t count);
-  static int WriteVec2NonBlock(int fd, const iovec* iov);
+  static int WriteVecNonBlock(int fd, iovec* iov, size_t& num_iov);
 
   inline static bool CheckConn(int fd);
 
