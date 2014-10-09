@@ -140,6 +140,10 @@ void TestConf::TestConfService_() {
 
   //test addrs
   ASSERT_EQ(8, conf_services_.remotes_.size());
+
+  //test_service names
+  ASSERT_EQ(2, conf_services_.GetServiceNames("set0")->size());
+  ASSERT_TRUE(NULL == conf_services_.GetServiceNames("set"));
 }
 
 TEST_F(TestConf, all) {}

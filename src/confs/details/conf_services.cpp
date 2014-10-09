@@ -57,6 +57,9 @@ bool ConfServices::BuildServicesSets_(const JsonType& conf) {
   for (iter = services_sets.begin(); iter != services_sets.end(); ++iter) {
     const JsonType& services_wt = iter->second;
     if (!services_wt.IsList()) return false;
+
+    std::pair<SetToServices::iterator, bool> ret_insert = 
+      set_to_services_.insert(std::make_pair(iter->first, std::vector<std::string>()));
       
     MAG_NEW_DECL(services_set, ServicesSet, ServicesSet)
     for (size_t i=0; i < services_wt.AsList().size(); ++i) {
@@ -72,8 +75,8 @@ bool ConfServices::BuildServicesSets_(const JsonType& conf) {
         MAG_DELETE(services_set)
         return false;
       }
-
       services_set->push_back(iter->second);
+      ret_insert.first->push_back(service_name);
     }
     services_sets_.insert(std::make_pair(iter->first, services_set));
   }
