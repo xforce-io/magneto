@@ -21,22 +21,22 @@ class IOBasicTPD {
   int Write(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
-      IN const std::vector<const Buf*>& bufs,
+      IN const Bufs& bufs,
       IN time_t timeo_ms,
-      OUT std::vector<int>& errors);
+      OUT Errors& errors);
 
   int Read(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
       IN time_t timeo_ms,
-      OUT std::vector< std::pair<int, ProtocolRead*> >& results);
+      OUT Responses& responses);
 
   int Talks(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
-      IN const std::vector<const Buf*>& bufs,
+      IN const Bufs& bufs,
       IN time_t timeo_ms,
-      OUT std::vector< std::pair<int, ProtocolRead*> >& results);
+      OUT Responses& responses);
 
   int Write(
       BizProcedure& biz_procedure, 
@@ -48,14 +48,14 @@ class IOBasicTPD {
       IN BizProcedure& biz_procedure, 
       IN const Service& service, 
       IN time_t timeo_ms, 
-      OUT ProtocolRead*& protocol); 
+      OUT ProtocolRead*& protocol_read); 
 
   int SimpleTalk(
       IN BizProcedure& biz_procedure,
       IN const Service& service,
       IN const Buf& buf,
       IN time_t timeo_ms,
-      OUT ProtocolRead*& protocol);
+      OUT ProtocolRead*& protocol_read);
 
   int WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms);
 
@@ -85,22 +85,22 @@ class IOBasic {
   inline int Write(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
-      IN const std::vector<const Buf*>& bufs,
+      IN const Bufs& bufs,
       IN time_t timeo_ms,
-      OUT std::vector<int>& errors);
+      OUT Errors& errors);
 
   inline int Read(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
       IN time_t timeo_ms,
-      OUT std::vector< std::pair<int, ProtocolRead*> >& results);
+      OUT Responses& responses);
 
   inline int Talks(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
-      IN const std::vector<const Buf*>& bufs,
+      IN const Bufs& bufs,
       IN time_t timeo_ms,
-      OUT std::vector< std::pair<int, ProtocolRead*> >& results);
+      OUT Responses& responses);
 
   inline int Write(
       BizProcedure& biz_procedure,
@@ -112,14 +112,14 @@ class IOBasic {
       IN BizProcedure& biz_procedure,
       IN const Service& service, 
       IN time_t timeo_ms, 
-      OUT ProtocolRead*& ProtocolRead); 
+      OUT ProtocolRead*& protocol_read); 
 
   inline int SimpleTalk(
       IN BizProcedure& biz_procedure,
       IN const Service& service,
       IN const Buf& buf,
       IN time_t timeo_ms,
-      OUT ProtocolRead*& protocol);
+      OUT ProtocolRead*& protocol_read);
 
   inline int WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms);
 
@@ -147,9 +147,9 @@ void IOBasicTPD::FreeTalks(BizProcedure& biz_procedure) {
 int IOBasic::Write(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set, 
-    const std::vector<const Buf*>& bufs, 
+    const Bufs& bufs, 
     time_t timeo_ms,
-    std::vector<int>& errors) {
+    Errors& errors) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
   return io_basic->Write(biz_procedure, services_set, bufs, timeo_ms, errors);
 }
@@ -158,19 +158,19 @@ int IOBasic::Read(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set, 
     time_t timeo_ms, 
-    std::vector< std::pair<int, ProtocolRead*> >& results) {
+    Responses& responses) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
-  return io_basic->Read(biz_procedure, services_set, timeo_ms, results);
+  return io_basic->Read(biz_procedure, services_set, timeo_ms, responses);
 }
 
 int IOBasic::Talks(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set,
-    const std::vector<const Buf*>& bufs,
+    const Bufs& bufs,
     time_t timeo_ms,
-    std::vector< std::pair<int, ProtocolRead*> >& results) {
+    Responses& responses) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
-  return io_basic->Talks(biz_procedure, services_set, bufs, timeo_ms, results);
+  return io_basic->Talks(biz_procedure, services_set, bufs, timeo_ms, responses);
 }
 
 int IOBasic::Write(
@@ -186,9 +186,9 @@ int IOBasic::Read(
     BizProcedure& biz_procedure, 
     const Service& service, 
     time_t timeo_ms, 
-    ProtocolRead*& protocol) {
+    ProtocolRead*& protocol_read) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
-  return io_basic->Read(biz_procedure, service, timeo_ms, protocol);
+  return io_basic->Read(biz_procedure, service, timeo_ms, protocol_read);
 }
 
 int IOBasic::SimpleTalk(
@@ -196,9 +196,9 @@ int IOBasic::SimpleTalk(
     const Service& service,
     const Buf& buf,
     time_t timeo_ms,
-    ProtocolRead*& protocol) {
+    ProtocolRead*& protocol_read) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
-  return io_basic->SimpleTalk(biz_procedure, service, buf, timeo_ms, protocol);
+  return io_basic->SimpleTalk(biz_procedure, service, buf, timeo_ms, protocol_read);
 }
 
 int IOBasic::WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms) {

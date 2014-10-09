@@ -2,7 +2,7 @@
 
 #include <tr1/memory>
 
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
 
 #include "thrift/config.h"
 #include "thrift/protocol/TBinaryProtocol.h"

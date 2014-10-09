@@ -17,9 +17,9 @@ IOBasicTPD::IOBasicTPD(const Confs& confs, Agents& agents) :
 int IOBasicTPD::Write(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set,
-    const std::vector<const Buf*>& bufs,
+    const Bufs& bufs,
     time_t timeo_ms,
-    std::vector<int>& errors) {
+    Errors& errors) {
   MAG_RAII_INIT(ErrorNo::kOther)
 
   int ret;
@@ -74,7 +74,7 @@ int IOBasicTPD::Read(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set,
     time_t timeo_ms,
-    std::vector< std::pair<int, ProtocolRead*> >& results) {
+    Responses& responses) {
   MAG_RAII_INIT(ErrorNo::kOther)
 
   int ret;
@@ -104,7 +104,7 @@ int IOBasicTPD::Read(
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
   MAG_BUG(0!=ret)
 
-  results.resize(services_set.size());
+  responses.resize(services_set.size());
   for (size_t i=0; i < services_set.size(); ++i) {
     Talk& talk = (*talks)[i];
     if (talk.fd > 0) {
@@ -113,8 +113,8 @@ int IOBasicTPD::Read(
       biz_procedure.InvalidFdInServiceCache(*(talk.service));
     }
 
-    results[i].first = talk.error;
-    results[i].second = talk.protocol_read;
+    responses[i].first = talk.error;
+    responses[i].second = talk.protocol_read;
   }
 
   ret = biz_procedure.GetMsgSession()->error;
@@ -129,9 +129,9 @@ int IOBasicTPD::Read(
 int IOBasicTPD::Talks(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set,
-    const std::vector<const Buf*>& bufs,
+    const Bufs& bufs,
     time_t timeo_ms,
-    std::vector< std::pair<int, ProtocolRead*> >& results) {
+    Responses& responses) {
   MAG_RAII_INIT(ErrorNo::kOther)
 
   int ret;
@@ -161,7 +161,7 @@ int IOBasicTPD::Talks(
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
   MAG_BUG(0!=ret)
 
-  results.resize(services_set.size());
+  responses.resize(services_set.size());
   for (size_t i=0; i < services_set.size(); ++i) {
     Talk& talk = (*talks)[i];
     if (talk.fd > 0) {
@@ -170,8 +170,8 @@ int IOBasicTPD::Talks(
       biz_procedure.InvalidFdInServiceCache(*(talk.service));
     }
 
-    results[i].first = talk.error;
-    results[i].second = talk.protocol_read;
+    responses[i].first = talk.error;
+    responses[i].second = talk.protocol_read;
   }
 
   ret = biz_procedure.GetMsgSession()->error;
@@ -237,7 +237,7 @@ int IOBasicTPD::Read(
     BizProcedure& biz_procedure,
     const Service& service, 
     time_t timeo_ms, 
-    ProtocolRead*& protocol) {
+    ProtocolRead*& protocol_read) {
   MAG_RAII_INIT(ErrorNo::kOther)
 
   int fd;
@@ -274,7 +274,7 @@ int IOBasicTPD::Read(
   ret = biz_procedure.GetMsgSession()->error;
   MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
 
-  protocol = talk.protocol_read;
+  protocol_read = talk.protocol_read;
   return ErrorNo::kOk;
 
   ERROR_HANDLE:
@@ -287,7 +287,7 @@ int IOBasicTPD::SimpleTalk(
     IN const Service& service,
     IN const Buf& buf,
     IN time_t timeo_ms,
-    OUT ProtocolRead*& protocol) {
+    OUT ProtocolRead*& protocol_read) {
   MAG_RAII_INIT(ErrorNo::kOther)
 
   int ret;
@@ -326,7 +326,7 @@ int IOBasicTPD::SimpleTalk(
   ret = biz_procedure.GetMsgSession()->error;
   MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
 
-  protocol = talk.protocol_read;
+  protocol_read = talk.protocol_read;
   return ErrorNo::kOk;
 
   ERROR_HANDLE:

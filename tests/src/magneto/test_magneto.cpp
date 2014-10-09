@@ -14,8 +14,8 @@ int main(int argc, char** argv) {
 
 void PingHandler(const magneto::ProtocolRead& protocol_read, void*) {
   const magneto::ProtocolReadPing& protocol_read_ping = SCAST<const magneto::ProtocolReadPing&>(protocol_read);
-  if ( 1 != protocol_read_ping.Len() ) {
-    WARN_LOG(magneto::magneto, "ret[" << protocol_read_ping.Len() << "]");
+  if ( 1 != protocol_read_ping.Size() ) {
+    WARN_LOG(magneto::magneto_logger, "ret[" << protocol_read_ping.Size() << "]");
   }
 /*
   magneto::ProtocolRead* response;
@@ -25,7 +25,7 @@ void PingHandler(const magneto::ProtocolRead& protocol_read, void*) {
     WARN("fail_simple_talk_to_service0 ret[" << ret << "]");
   }
 */
-  server.WriteBack(std::make_pair("b", 1), 100);
+  server.WriteBack(magneto::Buf(magneto::Slice("b", 1), NULL), 100);
 }
 
 TEST(test_magneto, all) {

@@ -22,6 +22,8 @@ class Magneto {
       void* args,
       bool& end);
 
+  const std::vector<std::string>* GetServiceNames(const std::string& services_set);
+
   int Write(
       IN const std::string& services_set,
       IN const Bufs& bufs,
@@ -31,13 +33,13 @@ class Magneto {
   int Read(
       IN const std::string& services_set,
       IN time_t timeo_ms,
-      OUT Responses& results);
+      OUT Responses& responses);
 
   int Talks(
       IN const std::string& services_set,
       IN const Bufs& bufs,
       IN time_t timeo_ms,
-      OUT Responses& results);
+      OUT Responses& responses);
 
   int Write(
       const std::string& service, 
@@ -47,13 +49,13 @@ class Magneto {
   int Read(
       IN const std::string& service, 
       IN time_t timeo_ms, 
-      OUT ProtocolRead*& protocol); 
+      OUT ProtocolRead*& protocol_read);
 
   int SimpleTalk(
       IN const std::string& service,
       IN const Buf& buf,
       IN time_t timeo_ms,
-      OUT ProtocolRead*& protocol);
+      OUT ProtocolRead*& protocol_read);
 
   int WriteBack(const Buf& buf, time_t timeo_ms);
 

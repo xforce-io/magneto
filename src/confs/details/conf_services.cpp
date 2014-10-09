@@ -76,7 +76,7 @@ bool ConfServices::BuildServicesSets_(const JsonType& conf) {
         return false;
       }
       services_set->push_back(iter->second);
-      ret_insert.first->push_back(service_name);
+      ret_insert.first->second.push_back(service_name);
     }
     services_sets_.insert(std::make_pair(iter->first, services_set));
   }

@@ -16,27 +16,31 @@ bool Magneto::Init(
   return magneto_base_->Init(conf_service_dir, req_handler, routine_items, args, end);
 }
 
+const std::vector<std::string>* Magneto::GetServiceNames(const std::string& services_set) {
+  return magneto_base_->GetServiceNames(services_set);
+}
+
 int Magneto::Write(
     const std::string& services_set,
     const Bufs& bufs,
     time_t timeo_ms,
-    std::vector<int>& errors) {
+    Errors& errors) {
   return magneto_base_->Write(services_set, bufs, timeo_ms, errors);
 }
 
 int Magneto::Read(
     const std::string& services_set,
     time_t timeo_ms,
-    Responses& results) {
-  return magneto_base_->Read(services_set, timeo_ms, results);
+    Responses& responses) {
+  return magneto_base_->Read(services_set, timeo_ms, responses);
 }
 
 int Magneto::Talks(
     const std::string& services_set,
-    const std::vector<const Buf*>& bufs,
+    const Bufs& bufs,
     time_t timeo_ms,
-    Responses& results) {
-  return magneto_base_->Talks(services_set, bufs, timeo_ms, results);
+    Responses& responses) {
+  return magneto_base_->Talks(services_set, bufs, timeo_ms, responses);
 }
 
 int Magneto::Write(
@@ -49,16 +53,16 @@ int Magneto::Write(
 int Magneto::Read(
     const std::string& service, 
     time_t timeo_ms, 
-    ProtocolRead*& protocol) {
-  return magneto_base_->Read(service, timeo_ms, protocol);
+    ProtocolRead*& protocol_read) {
+  return magneto_base_->Read(service, timeo_ms, protocol_read);
 }
 
 int Magneto::SimpleTalk(
     const std::string& service,
     const Buf& buf,
     time_t timeo_ms,
-    ProtocolRead*& protocol) {
-  return magneto_base_->SimpleTalk(service, buf, timeo_ms, protocol);
+    ProtocolRead*& protocol_read) {
+  return magneto_base_->SimpleTalk(service, buf, timeo_ms, protocol_read);
 }
 
 int Magneto::WriteBack(const Buf& buf, time_t timeo_ms) {

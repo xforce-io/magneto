@@ -4,7 +4,7 @@
 #include "../../public/buffer.hpp"
 #include "t_simple_protocol.h"
 
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
 
 namespace magneto {
 

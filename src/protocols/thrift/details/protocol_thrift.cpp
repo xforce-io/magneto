@@ -1,7 +1,7 @@
 #include "../protocol_thrift.h"
 #include "../../public.h"
 
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
 
 using ::apache::thrift::protocol::TMessageType;
 using ::apache::thrift::protocol::T_CALL;

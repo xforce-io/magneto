@@ -33,7 +33,7 @@ Protocol::Category PoolProtocols::GetCategory(const std::string& category) {
     return Protocol::kPing;
   } else if ("redis" == category) {
     return Protocol::kRedis;
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
   } else if ("thrift" == category) {
     return Protocol::kThrift;
 #endif
@@ -50,7 +50,7 @@ ProtocolWrite* PoolProtocols::GetWrite(Protocol::Category category) {
       return GetWrite<ProtocolWriteRapid>();
     case Protocol::kRedis :
       return GetWrite<ProtocolWriteRedis>();
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
     case Protocol::kThrift :
       return GetWrite<ProtocolWriteThrift>();
 #endif
@@ -68,7 +68,7 @@ ProtocolRead* PoolProtocols::GetRead(Protocol::Category category) {
       return GetRead<ProtocolReadRapid>();
     case Protocol::kRedis :
       return GetRead<ProtocolReadRedis>();
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
     case Protocol::kThrift :
       return GetRead<ProtocolReadThrift>();
 #endif

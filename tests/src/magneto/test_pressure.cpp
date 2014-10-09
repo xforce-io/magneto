@@ -19,7 +19,7 @@ void NaiveHandler(void*) {
 
   timer.Start(true);
   for (;;) {
-    int ret = server.SimpleTalk("downstream", std::make_pair("a", 1), 100, response);
+    int ret = server.SimpleTalk("downstream", magneto::Buf(magneto::Slice("a", 1), NULL), 100, response);
     magneto::ProtocolReadRedis* protocol_read_redis = SCAST<magneto::ProtocolReadRedis*>(response);
     if ( magneto::ErrorNo::kOk == ret && 'b' == protocol_read_redis->Data()[0] ) {
       ++succ;

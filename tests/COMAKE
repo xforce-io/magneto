@@ -1,5 +1,5 @@
-ROOTDIR('../../../')
-CXXFLAGS('-g -W -Wall -Dprivate=public  -Dprotected=public -Wno-deprecated -Wno-invalid-offsetof -fno-builtin-memcmp -DONLINE_TEST -DUT_TEST -O2')
+ROOTDIR('../../../xlib')
+CXXFLAGS('-g -W -Wall -Dprivate=public  -Dprotected=public -Wno-deprecated -Wno-invalid-offsetof -fno-builtin-memcmp -Wno-strict-aliasing -DONLINE_TEST -DUT_TEST -O2')
 
 for file in SRC(
     ' src/public/test_*.cpp '

@@ -34,7 +34,7 @@ void Service(const magneto::ProtocolRead& protocol_read, void* args) {
 void ClientHandler(void* args) {
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
 
-  static const size_t kNumReqs=100;
+  static const size_t kNumReqs=5000;
   size_t succ=0;
   magneto::ProtocolRead* response;
   magneto::Timer timer;
@@ -77,7 +77,7 @@ int main() {
   MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_server")
 
   // init client
-  client_handle.push_back(std::make_pair(ClientHandler, 1));
+  client_handle.push_back(std::make_pair(ClientHandler, 100));
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
   MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_client")
 

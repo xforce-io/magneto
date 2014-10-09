@@ -20,7 +20,7 @@ struct Protocol {
     kRapid,
     kPing,
     kRedis,
-#ifdef THRIFT_SUPPORT
+#ifdef MAGNETO_THRIFT_SUPPORT
     kThrift,
 #endif
     kHttp,

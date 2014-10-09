@@ -28,7 +28,9 @@ target_link_libraries(pingpong/bin/pingpong
   log4cplus
   pthread
   rt
-  z)
+  z
+  #tcmalloc
+  )
 
 add_custom_command(TARGET pingpong/bin/pingpong  
   PRE_BUILD
@@ -54,7 +56,9 @@ target_link_libraries(cluster_agent/bin/cluster_agent
   log4cplus
   pthread
   rt
-  z)
+  z
+  #tcmalloc
+  )
 
 add_custom_command(TARGET cluster_agent/bin/cluster_agent
   PRE_BUILD
@@ -79,7 +83,9 @@ target_link_libraries(broadcast/bin/broadcast
   log4cplus
   pthread
   rt
-  z)
+  z
+  #tcmalloc
+  )
 
 add_custom_command(TARGET broadcast/bin/broadcast
   PRE_BUILD
@@ -107,7 +113,8 @@ add_custom_command(TARGET broadcast/bin/broadcast
 #  log4cplus
 #  pthread
 #  rt
-#  z)
+#  z
+#  #tcmalloc)
 #
 #add_custom_command(TARGET thrift_protocol/bin/thrift_protocol
 #  PRE_BUILD
