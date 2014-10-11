@@ -15,6 +15,7 @@ set(MAG_SRC_DIR ../src/)
 FILE(GLOB_RECURSE MAG_FILES "src/*.cpp")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -O2")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -DMAGNETO_THRIFT_SUPPORT -O2")
 
 add_library(magneto
   ${MAG_FILES})
@@ -23,7 +24,8 @@ target_link_libraries(magneto
   pthread
   rt
   z
-  #thrift
+#  thrift
+#  tcmalloc
   )
 
 add_subdirectory(examples)

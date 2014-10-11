@@ -98,10 +98,12 @@ struct Talk {
   };
 
   enum Status {
+    kStart,
     kConn,
     kRead,
     kWrite,
     kClose,
+    kEnd,
   };
 
   size_t no_talk;

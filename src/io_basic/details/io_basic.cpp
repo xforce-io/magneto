@@ -145,11 +145,11 @@ int IOBasicTPD::Talks(
     (*talks)[i].Assign(
         i,
         Talk::kWriteAndRead, 
-        services_set[i], 
-        services_set[i]->protocol_category, 
-        bufs[i], 
-        timeo_ms, 
-        fd, 
+        services_set[i],
+        services_set[i]->protocol_category,
+        bufs[i],
+        timeo_ms,
+        fd,
         remote);
   }
 

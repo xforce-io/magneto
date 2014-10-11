@@ -23,7 +23,11 @@ bool Session::Reset(ucontext_t& biz_ctx, BizProcedure& biz_procedure, std::vecto
   has_failure_=false;
 
   for (size_t i=0; i < talks_->size(); ++i) {
-    (*talks_)[i].error = ErrorNo::kOk;
+    if (Talk::kEnd == (*talks_)[i].status) {
+      ++num_talks_done_;
+      continue;
+    }
+
     ResetTalk_((*talks_)[i], false);
     if (ErrorNo::kOk != (*talks_)[i].error) {
       ++num_talks_done_;

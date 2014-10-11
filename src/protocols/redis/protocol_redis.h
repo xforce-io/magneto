@@ -39,8 +39,8 @@ class ProtocolReadRedis : public ProtocolRead {
   int Read(int fd);
   bool Decode() { return true; }
 
-  const char* Data() const { return out_.data(); }
-  size_t Size() const { return out_.size(); }
+  const char* Data() const { return out_.c_str(); }
+  size_t Size() const { return out_.length(); }
 
   virtual ~ProtocolReadRedis();
 

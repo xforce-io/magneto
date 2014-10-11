@@ -22,8 +22,8 @@ ProtocolReadRedis::ProtocolReadRedis() {
 }
 
 int ProtocolReadRedis::Read(int fd) { 
-  size_t tmppos_=0;
   while (true) {
+    size_t tmppos_=0;
     int ret = IOHelper::ReadNonBlock(fd, tmpbuf_, kTmpBufSize);
     if (ret>=0) {
       tmppos_+=ret;

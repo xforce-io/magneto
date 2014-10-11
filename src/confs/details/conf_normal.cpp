@@ -83,7 +83,7 @@ bool ConfNormal::Init(const std::string& filedir) {
         iter->first, 
         listen_addr.name,
         listen_addr.category);
-    MAG_FAIL_HANDLE_FATAL(!ret || !iter->second.IsStr(), "invalid_listen_addr")
+    MAG_FAIL_HANDLE_FATAL(!ret || !iter->second.IsStr(), "invalid_listen_addr[" << iter->first << "]")
 
     listen_addr.addr.Assign(iter->second.AsStr());
     listen_addrs_.push_back(listen_addr);

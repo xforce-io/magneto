@@ -12,20 +12,28 @@ void Talk::Assign(
     int fd_arg, 
     const Remote* remote_arg) {
   int ret;
-  no_talk = no_talk_arg;
-  category = category_arg;
-  service = service_arg;
-  buf = buf_arg;
+  no_talk=no_talk_arg;
+  category=category_arg;
+  service=service_arg;
+  buf=buf_arg;
+  protocol_write=NULL;
+  protocol_read=NULL;
   starttime_ms = Time::GetCurrentMsec(false);
   endtime_ms = starttime_ms + timeo_ms;
+  status=kStart;
   error = ErrorNo::kOk;
   fail_remotes.clear();
-  fd = fd_arg;
-  remote = remote_arg;
+  fd=fd_arg;
+  remote=remote_arg;
   if (NULL!=service) {
     retry = service->retry;
   } else {
     retry=0;
+  }
+
+  if (NULL==buf_arg) {
+    status=kEnd;
+    return;
   }
 
   switch (category) {

@@ -80,7 +80,7 @@ int RedisParser::ParseReply(const std::string& reply, bool* is_pong, size_t* siz
     }
     case '-' : {
       *size_reply = idx_cr+2;
-      (*out).append("null");
+      (*out).append("__null");
       return 0;
     }
     default :
@@ -130,7 +130,7 @@ int RedisParser::ParseReplySeg_(
   int64_t len_answer = strtol(reply.c_str()+start+1, &endptr, 10);
   if (-1==len_answer) {
     *size_reply_seg = idx_cr+2-start;
-    (*out).append("null");
+    (*out).append("__null");
     return 0;
   } else if (LONG_MAX==len_answer
     || LONG_MIN==len_answer

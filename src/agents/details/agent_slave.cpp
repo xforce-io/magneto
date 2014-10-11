@@ -264,7 +264,7 @@ bool AgentSlave::CheckMailbox_() {
             *(msg_session.biz_procedure), 
             *(msg_session.talks));
         if (unlikely(!ret)) {
-          msg_session.error = MsgSession::kBroken;
+          msg_session.error = ErrorNo::kBroken;
           SendBackMsg_(*msg);
           WARN("fail_reset_session");
         }
