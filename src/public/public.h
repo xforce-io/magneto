@@ -14,3 +14,5 @@
 #include "delay_del_ptr.hpp"
 #include "delay_close_fds.hpp"
 #include "slice.hpp"
+#include "gmonitor.h"
+#include "mem_profile.h"

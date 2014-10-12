@@ -132,7 +132,6 @@ bool AgentSlave::CheckEvents_() {
                 (!session.HasFailure() ? ErrorNo::kOk : ErrorNo::kPartial));
             SendBackMsg_(tmp_msg_session_);
             pool_sessions_->Free(&session);
-            pool_event_ctxs_->Free(event_ctx);
           }
           break;
         }
@@ -364,6 +363,7 @@ bool AgentSlave::CheckSession_(Driver::Event event, EventCtx& event_ctx) {
         << session.GetBizProcedure()->GetFdClient()
         << "]");
   }
+  pool_event_ctxs_->Free(&event_ctx);
   return session.FinishTalk(ErrorNo::kOk == talk.error, talk);
 }
 

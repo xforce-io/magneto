@@ -38,6 +38,14 @@
 
 #include <malloc.h>
 
+#ifdef MEMPROFILE
+#include "mem_profile.h"
+#endif
+
+#ifdef MONITOR_TYPE
+#include "gmonitor.h"
+#endif
+
 #ifndef IN
 #define IN
 #endif
@@ -307,42 +315,51 @@
   MAG_BUG(expr)
 #endif
 
+#ifndef MAG_STATIC_PROFILE
+#define MAG_STATIC_PROFILE(item, num) \
+  do { \
+    char _buf[magneto::kMaxSizeStaticProfilekey]; \
+    sprintf(_buf, item"_%s_%d", __FILE__, __LINE__); \
+    magneto::GMonitor::Get().Inc("static_profile", _buf, num); \
+  } while (0);
+#endif
+
 #ifdef MEMPROFILE
 
 #define MAG_NEW(member, constructor) \
   do { \
     member = ::new (std::nothrow) constructor; \
-    if (xlib::MemProfile::GetFlag()) { \
-      char buf[kMaxSizeMemProfilekey]; \
-      sprintf(buf, "new_%s_%d", __FILE__, __LINE__); \
-      xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+    if (magneto::MemProfile::GetFlag()) { \
+      char _buf[magneto::kMaxSizeMemProfilekey]; \
+      sprintf(_buf, "new_%s_%d", __FILE__, __LINE__); \
+      magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
     } \
   } while(0);
 
 #define MAG_NEW_DECL(member, type, constructor) \
   type* member = ::new (std::nothrow) constructor; \
-  if (xlib::MemProfile::GetFlag()) { \
-    char buf[kMaxSizeMemProfilekey]; \
-    sprintf(buf, "new_%s_%d", __FILE__, __LINE__); \
-    xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+  if (magneto::MemProfile::GetFlag()) { \
+    char _buf[magneto::kMaxSizeMemProfilekey]; \
+    sprintf(_buf, "new_%s_%d", __FILE__, __LINE__); \
+    magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
   }
 
 #define MAG_NEW_AND_RET(type) \
   type* member = ::new (std::nothrow) type; \
-  if (xlib::MemProfile::GetFlag()) { \
-    char buf[kMaxSizeMemProfilekey]; \
-    sprintf(buf, "new_%s_%d", __FILE__, __LINE__); \
-    xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+  if (magneto::MemProfile::GetFlag()) { \
+    char _buf[magneto::kMaxSizeMemProfilekey]; \
+    sprintf(_buf, "new_%s_%d", __FILE__, __LINE__); \
+    magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
   } \
   return member; \
 
 #define MAG_MALLOC(member, type, size) \
   do { \
     member = reinterpret_cast<type>(::malloc(size)); \
-    if (xlib::MemProfile::GetFlag()) { \
-      char buf[kMaxSizeMemProfilekey]; \
-      sprintf(buf, "new_%s_%d", __FILE__, __LINE__); \
-      xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+    if (magneto::MemProfile::GetFlag()) { \
+      char _buf[magneto::kMaxSizeMemProfilekey]; \
+      sprintf(_buf, "new_%s_%d", __FILE__, __LINE__); \
+      magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
     } \
   } while(0);
 
@@ -354,10 +371,10 @@
 #define MAG_DELETE(member) \
   do { \
     if (likely(NULL!=member)) { \
-      if (xlib::MemProfile::GetFlag()) { \
-        char buf[kMaxSizeMemProfilekey]; \
-        sprintf(buf, "delete_%s_%d", __FILE__, __LINE__); \
-        xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+      if (magneto::MemProfile::GetFlag()) { \
+        char _buf[magneto::kMaxSizeMemProfilekey]; \
+        sprintf(_buf, "delete_%s_%d", __FILE__, __LINE__); \
+        magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
       } \
       delete member; \
       member=NULL; \
@@ -367,10 +384,10 @@
 #define MAG_DELETE_ARRAY(member) \
   do { \
     if (likely(NULL!=member)) { \
-      if (xlib::MemProfile::GetFlag()) { \
-        char buf[kMaxSizeMemProfilekey]; \
-        sprintf(buf, "delete_%s_%d", __FILE__, __LINE__); \
-        xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+      if (magneto::MemProfile::GetFlag()) { \
+        char _buf[magneto::kMaxSizeMemProfilekey]; \
+        sprintf(_buf, "delete_%s_%d", __FILE__, __LINE__); \
+        magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
       } \
       delete [] member; \
       member=NULL; \
@@ -380,10 +397,10 @@
 #define MAG_FREE(member) \
   do { \
     if (likely(NULL!=member)) { \
-      if (xlib::MemProfile::GetFlag()) { \
-        char buf[kMaxSizeMemProfilekey]; \
-        sprintf(buf, "delete_%s_%d", __FILE__, __LINE__); \
-        xlib::GMonitor::Get().Inc("mem_profile", buf, malloc_usable_size(member)); \
+      if (magneto::MemProfile::GetFlag()) { \
+        char _buf[magneto::kMaxSizeMemProfilekey]; \
+        sprintf(_buf, "delete_%s_%d", __FILE__, __LINE__); \
+        magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
       } \
       ::free(member); \
       member=NULL; \
@@ -501,6 +518,7 @@ LOGGER_EXTERN_DECL(magneto_logger);
 
 class NoneType {};
 
+static const size_t kMaxSizeStaticProfilekey=512;
 static const size_t kMaxSizeMemProfilekey=512;
 
 /*

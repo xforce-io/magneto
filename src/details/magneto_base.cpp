@@ -29,15 +29,6 @@ bool MagnetoBase::Init(
   InitSignals_();
 
   int ret;
-#ifdef MONITOR
-  ret = xlib::pub::GMonitor::Init(conf_service_dir + "/monitor.conf");
-  MAG_FAIL_HANDLE_FATAL(false==ret, "fail_init_monitor")
-#endif
-
-#ifdef MEMPROFILE
-  MemProfile::SetFlag(false);
-#endif
-
   MAG_NEW(confs_, Confs)
   ret = confs_->Init(conf_service_dir);
   MAG_FAIL_HANDLE_FATAL(!ret, "fail_load_versioned_conf_services[" << conf_service_dir << "]")
@@ -92,14 +83,6 @@ MagnetoBase::~MagnetoBase() {
   MAG_DELETE(agents_)
   MAG_DELETE(schedulers_)
   MAG_DELETE(confs_)
-
-#ifdef MEMPROFILE
-  MemProfile::SetFlag(false);
-#endif
-
-#ifdef MONITOR
-  xlib::pub::GMonitor::Tini();
-#endif
 }
 
 void MagnetoBase::InitSignals_() {

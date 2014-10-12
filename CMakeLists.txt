@@ -6,6 +6,9 @@ include_directories(
   /usr/include/
   )
 
+link_directories(
+)
+
 set(MAG_OUTPUT_PATH magneto/)
 set(MAG_LIB_OUTPUT_PATH  ${MAG_OUTPUT_PATH}/lib/magneto)
 set(MAG_INC_OUTPUT_PATH  ${MAG_OUTPUT_PATH}/include/magneto)
@@ -21,11 +24,13 @@ add_library(magneto
   ${MAG_FILES})
 
 target_link_libraries(magneto
+  log4cplus
   pthread
   rt
   z
-#  thrift
-#  tcmalloc
+  #thrift
+  #tcmalloc
+  #monitor
   )
 
 add_subdirectory(examples)
@@ -52,6 +57,8 @@ add_custom_command(TARGET magneto
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/slice.hpp ${MAG_INC_OUTPUT_PATH}/public/
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/buffer.hpp ${MAG_INC_OUTPUT_PATH}/public/
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/time/time.h ${MAG_INC_OUTPUT_PATH}/public/time/
+  COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/gmonitor.h ${MAG_INC_OUTPUT_PATH}/public/
+  COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/mem_profile.h ${MAG_INC_OUTPUT_PATH}/public/
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/protocols/protocol.h ${MAG_INC_OUTPUT_PATH}/protocols
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/protocols/protocols.h ${MAG_INC_OUTPUT_PATH}/protocols
 

@@ -24,14 +24,6 @@ set(PINGPONG_PRJ_PATH ../../examples/pingpong/)
 add_executable(pingpong/bin/pingpong
   pingpong/src/pingpong.cpp)
 
-target_link_libraries(pingpong/bin/pingpong
-  log4cplus
-  pthread
-  rt
-  z
-  #tcmalloc
-  )
-
 add_custom_command(TARGET pingpong/bin/pingpong  
   PRE_BUILD
 
@@ -52,14 +44,6 @@ set(CLUSTER_AGENT_PRJ_PATH ../../examples/cluster_agent/)
 add_executable(cluster_agent/bin/cluster_agent
   cluster_agent/src/cluster_agent.cpp)
 
-target_link_libraries(cluster_agent/bin/cluster_agent
-  log4cplus
-  pthread
-  rt
-  z
-  #tcmalloc
-  )
-
 add_custom_command(TARGET cluster_agent/bin/cluster_agent
   PRE_BUILD
 
@@ -78,14 +62,6 @@ set(BROADCAST_PRJ_PATH ../../examples/broadcast/)
 
 add_executable(broadcast/bin/broadcast
   broadcast/src/broadcast.cpp)
-
-target_link_libraries(broadcast/bin/broadcast
-  log4cplus
-  pthread
-  rt
-  z
-  #tcmalloc
-  )
 
 add_custom_command(TARGET broadcast/bin/broadcast
   PRE_BUILD
@@ -108,13 +84,6 @@ add_custom_command(TARGET broadcast/bin/broadcast
 #  thrift_protocol/src/gen-cpp/PingPongTest.cpp
 #  thrift_protocol/src/gen-cpp/sample_proto_constants.cpp
 #  thrift_protocol/src/gen-cpp/sample_proto_types.cpp)
-#
-#target_link_libraries(thrift_protocol/bin/thrift_protocol
-#  log4cplus
-#  pthread
-#  rt
-#  z
-#  #tcmalloc)
 #
 #add_custom_command(TARGET thrift_protocol/bin/thrift_protocol
 #  PRE_BUILD
