@@ -3,7 +3,7 @@ magneto
 
 ***A c++ network framework***
 
-***Best or Nothing，如果你能发现更好的，请告诉我***
+***Best or Nothing，如果使用别的库可以用更简洁的代码写网络逻辑，请告诉我***
 
 *Notice*
 * First release branch is expected to be released in november
