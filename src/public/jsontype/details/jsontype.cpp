@@ -257,7 +257,7 @@ std::string* SharedJsonVal::JsonParseUtil::ReadinStrRaw_(const char*& str) {
 
   const char* start=++str;
   while ('\0'!=*str) {
-    if ( '"'==*str && ( start==str || '\\'!=*str ) ) {
+    if ( '"'==*str && ( start==str || '\\'!=*(str-1) ) ) {
       break;
     }
     ++str;
