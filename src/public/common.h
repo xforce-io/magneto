@@ -102,32 +102,32 @@
     log4cplus::PropertyConfigurator::doConfigure(property_file);
 #endif
 
-#ifndef
+#ifndef LOGGER_SYS_INIT_DYNAMIC
 #define LOGGER_SYS_INIT_DYNAMIC(watcher, property_file, check_interval_ms)  \
     log4cplus::ConfigureAndWatchThread watcher(property_file, check_interval_ms);
 #endif
 
-#ifndef
+#ifndef LOGGER_CLASS_DECL
 #define LOGGER_CLASS_DECL(logger) \
     static log4cplus::Logger logger;
 #endif
 
-#ifndef
+#ifndef LOGGER_CLASS_IMPL
 #define LOGGER_CLASS_IMPL(logger, classname) \
     log4cplus::Logger classname::logger = log4cplus::Logger::getInstance(#classname);
 #endif
 
-#ifndef
+#ifndef LOGGER_EXTERN_DECL
 #define LOGGER_EXTERN_DECL(logger) \
     extern  log4cplus::Logger logger;
 #endif
 
-#ifndef
+#ifndef LOGGER_IMPL
 #define LOGGER_IMPL(logger, name)  \
     log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
 #endif
 
-#ifndef
+#ifndef LOGGER_STATIC_DECL_IMPL
 #define LOGGER_STATIC_DECL_IMPL(logger,name) \
     static log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
 #endif
