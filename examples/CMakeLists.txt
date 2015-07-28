@@ -19,7 +19,7 @@ set(EXP_OUTPUT_PATH ./)
 ############################
 #     pingpong
 ############################
-set(PINGPONG_PRJ_PATH ../../examples/pingpong/)
+set(PINGPONG_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/pingpong/")
 
 add_executable(pingpong/bin/pingpong
   pingpong/src/pingpong.cpp)
@@ -39,7 +39,7 @@ add_custom_command(TARGET pingpong/bin/pingpong
 ############################
 #     cluster agent
 ############################
-set(CLUSTER_AGENT_PRJ_PATH ../../examples/cluster_agent/)
+set(CLUSTER_AGENT_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cluster_agent/")
 
 add_executable(cluster_agent/bin/cluster_agent
   cluster_agent/src/cluster_agent.cpp)
@@ -58,7 +58,7 @@ add_custom_command(TARGET cluster_agent/bin/cluster_agent
 ############################
 #     broadcast
 ############################
-set(BROADCAST_PRJ_PATH ../../examples/broadcast/)
+set(BROADCAST_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/broadcast/")
 
 add_executable(broadcast/bin/broadcast
   broadcast/src/broadcast.cpp)
@@ -77,7 +77,7 @@ add_custom_command(TARGET broadcast/bin/broadcast
 #############################
 ##     thrift protocol 
 ############################
-#set(THRIFT_PROTOCOL_PRJ_PATH ../../examples/thrift_protocol/)
+#set(THRIFT_PROTOCOL_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thrift_protocol/")
 #
 #add_executable(thrift_protocol/bin/thrift_protocol
 #  thrift_protocol/src/thrift_protocol.cpp

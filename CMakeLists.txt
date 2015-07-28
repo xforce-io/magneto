@@ -13,9 +13,9 @@ set(MAG_OUTPUT_PATH magneto/)
 set(MAG_LIB_OUTPUT_PATH  ${MAG_OUTPUT_PATH}/lib/magneto)
 set(MAG_INC_OUTPUT_PATH  ${MAG_OUTPUT_PATH}/include/magneto)
 
-set(MAG_SRC_DIR ../src/)
+set(MAG_SRC_DIR "${CMAKE_SOURCE_DIR}/src/")
 
-FILE(GLOB_RECURSE MAG_FILES "src/*.cpp")
+FILE(GLOB_RECURSE MAG_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -O2")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -DMAGNETO_THRIFT_SUPPORT -O2")
