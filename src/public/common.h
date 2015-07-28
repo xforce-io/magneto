@@ -97,37 +97,88 @@
 #include <log4cplus/configurator.h>
 #include <log4cplus/helpers/timehelper.h>
 
+#ifndef LOGGER_SYS_INIT
 #define LOGGER_SYS_INIT(property_file) \
     log4cplus::PropertyConfigurator::doConfigure(property_file);
+#endif
+
+#ifndef
 #define LOGGER_SYS_INIT_DYNAMIC(watcher, property_file, check_interval_ms)  \
     log4cplus::ConfigureAndWatchThread watcher(property_file, check_interval_ms);
+#endif
 
+#ifndef
 #define LOGGER_CLASS_DECL(logger) \
     static log4cplus::Logger logger;
+#endif
+
+#ifndef
 #define LOGGER_CLASS_IMPL(logger, classname) \
     log4cplus::Logger classname::logger = log4cplus::Logger::getInstance(#classname);
+#endif
 
+#ifndef
 #define LOGGER_EXTERN_DECL(logger) \
     extern  log4cplus::Logger logger;
+#endif
+
+#ifndef
 #define LOGGER_IMPL(logger, name)  \
     log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
+#endif
 
+#ifndef
 #define LOGGER_STATIC_DECL_IMPL(logger,name) \
     static log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
+#endif
 
+#ifndef TRACE
 #define TRACE(log)  LOG4CPLUS_TRACE(magneto_logger, log)
-#define DEBUG(log) LOG4CPLUS_DEBUG(magneto_logger, log)
-#define NOTICE(log) LOG4CPLUS_INFO(magneto_logger, log)
-#define WARN(log) LOG4CPLUS_WARN(magneto_logger, log)
-#define ERROR(log)  LOG4CPLUS_ERROR(magneto_logger, log)
-#define FATAL(log) LOG4CPLUS_FATAL(magneto_logger, log)
+#endif
 
+#ifndef DEBUG
+#define DEBUG(log) LOG4CPLUS_DEBUG(magneto_logger, log)
+#endif
+
+#ifndef NOTICE
+#define NOTICE(log) LOG4CPLUS_INFO(magneto_logger, log)
+#endif
+
+#ifndef WARN
+#define WARN(log) LOG4CPLUS_WARN(magneto_logger, log)
+#endif
+
+#ifndef ERROR
+#define ERROR(log)  LOG4CPLUS_ERROR(magneto_logger, log)
+#endif
+
+#ifndef FATAL
+#define FATAL(log) LOG4CPLUS_FATAL(magneto_logger, log)
+#endif
+
+#ifndef TRACE_LOG
 #define TRACE_LOG(logger, log)  LOG4CPLUS_TRACE(logger, log)
+#endif
+
+#ifndef DEBUG_LOG
 #define DEBUG_LOG(logger, log) LOG4CPLUS_DEBUG(logger, log)
+#endif
+
+#ifndef NOTICE_LOG
 #define NOTICE_LOG(logger, log) LOG4CPLUS_INFO(logger, log)
+#endif
+
+#ifndef WARN_LOG
 #define WARN_LOG(logger, log) LOG4CPLUS_WARN(logger, log)
+#endif
+
+#ifndef ERROR_LOG
 #define ERROR_LOG(logger, log)  LOG4CPLUS_ERROR(logger, log)
+#endif
+
+#ifndef FATAL_LOG
 #define FATAL_LOG(logger, log) LOG4CPLUS_FATAL(logger, log)
+#endif
 
 /* end of log4cplus macros */
 
@@ -326,6 +377,7 @@
 
 #ifdef MEMPROFILE
 
+#ifndef MAG_NEW
 #define MAG_NEW(member, constructor) \
   do { \
     member = ::new (std::nothrow) constructor; \
@@ -335,7 +387,9 @@
       magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
     } \
   } while(0);
+#endif
 
+#ifndef MAG_NEW_DECL
 #define MAG_NEW_DECL(member, type, constructor) \
   type* member = ::new (std::nothrow) constructor; \
   if (magneto::MemProfile::GetFlag()) { \
@@ -343,7 +397,9 @@
     sprintf(_buf, "new_%s_%d", __FILE__, __LINE__); \
     magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
   }
+#endif
 
+#ifndef MAG_NEW_AND_RET
 #define MAG_NEW_AND_RET(type) \
   type* member = ::new (std::nothrow) type; \
   if (magneto::MemProfile::GetFlag()) { \
@@ -351,8 +407,10 @@
     sprintf(_buf, "new_%s_%d", __FILE__, __LINE__); \
     magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
   } \
-  return member; \
+  return member;
+#endif
 
+#ifndef MAG_MALLOC
 #define MAG_MALLOC(member, type, size) \
   do { \
     member = reinterpret_cast<type>(::malloc(size)); \
@@ -362,12 +420,16 @@
       magneto::GMonitor::Get().Inc("mem_profile", _buf, malloc_usable_size(member)); \
     } \
   } while(0);
+#endif
 
+#ifndef MAG_REALLOC
 #define MAG_REALLOC(new_member, old_member, type, size) \
   do { \
     new_member = reinterpret_cast<type>(::realloc(old_member, size)); \
   } while(0);
+#endif
 
+#ifndef MAG_DELETE
 #define MAG_DELETE(member) \
   do { \
     if (likely(NULL!=member)) { \
@@ -380,7 +442,9 @@
       member=NULL; \
     } \
   } while(0);
+#endif
 
+#ifndef MAG_DELETE_ARRAY
 #define MAG_DELETE_ARRAY(member) \
   do { \
     if (likely(NULL!=member)) { \
@@ -393,7 +457,9 @@
       member=NULL; \
     } \
   } while(0);
+#endif
 
+#ifndef MAG_FREE
 #define MAG_FREE(member) \
   do { \
     if (likely(NULL!=member)) { \
@@ -406,30 +472,42 @@
       member=NULL; \
     } \
   } while(0);
+#endif
 
 #else
 
+#ifndef MAG_NEW
 #define MAG_NEW(member, constructor) \
   do { \
     member = ::new (std::nothrow) constructor; \
   } while(0);
+#endif
 
+#ifndef MAG_NEW_DECL
 #define MAG_NEW_DECL(member, type, constructor) \
-  type* member = ::new (std::nothrow) constructor; \
+  type* member = ::new (std::nothrow) constructor;
+#endif
 
+#ifndef MAG_NEW_AND_RET
 #define MAG_NEW_AND_RET(type) \
-  return ::new (std::nothrow) type; \
+  return ::new (std::nothrow) type;
+#endif
 
+#ifndef MAG_MALLOC
 #define MAG_MALLOC(member, type, size) \
   do { \
     member = reinterpret_cast<type>(::malloc(size)); \
   } while(0);
+#endif
 
+#ifndef MAG_REALLOC
 #define MAG_REALLOC(new_member, old_member, type, size) \
   do { \
     new_member = reinterpret_cast<type>(::realloc(old_member, size)); \
   } while(0);
+#endif
 
+#ifndef MAG_DELETE
 #define MAG_DELETE(member) \
   do { \
     if (likely(NULL!=member)) { \
@@ -437,7 +515,9 @@
       member=NULL; \
     } \
   } while(0);
+#endif
 
+#ifndef MAG_DELETE_ARRAY
 #define MAG_DELETE_ARRAY(member) \
   do { \
     if (likely(NULL!=member)) { \
@@ -445,7 +525,9 @@
       member=NULL; \
     } \
   } while(0);
+#endif
 
+#ifndef MAG_FREE
 #define MAG_FREE(member) \
   do { \
     if(likely(NULL!=member)) { \
@@ -453,6 +535,7 @@
       member=NULL; \
     } \
   } while(0);
+#endif
 
 #endif
 
