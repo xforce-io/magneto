@@ -59,6 +59,7 @@ add_custom_command(TARGET magneto
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/time/time.h ${MAG_INC_OUTPUT_PATH}/public/time/
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/gmonitor.h ${MAG_INC_OUTPUT_PATH}/public/
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/mem_profile.h ${MAG_INC_OUTPUT_PATH}/public/
+  COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/public/jsontype/jsontype.h ${MAG_INC_OUTPUT_PATH}/public/
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/protocols/protocol.h ${MAG_INC_OUTPUT_PATH}/protocols
   COMMAND ${CMAKE_COMMAND} -E copy ${MAG_SRC_DIR}/protocols/protocols.h ${MAG_INC_OUTPUT_PATH}/protocols
 
