@@ -1,7 +1,7 @@
 #include "../magneto.h"
 #include "../magneto_base.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 Magneto::Magneto() :
   magneto_base_(NULL) {}
@@ -12,7 +12,7 @@ bool Magneto::Init(
     const RoutineItems* routine_items,
     void* args,
     bool& end) {
-  MAG_NEW(magneto_base_, MagnetoBase)
+  XFC_NEW(magneto_base_, MagnetoBase)
   return magneto_base_->Init(conf_service_dir, req_handler, routine_items, args, end);
 }
 
@@ -78,7 +78,7 @@ void Magneto::Stop() {
 }
 
 Magneto::~Magneto() {
-  MAG_DELETE(magneto_base_)
+  XFC_DELETE(magneto_base_)
 }
 
-}
+}}

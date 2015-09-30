@@ -1,15 +1,15 @@
 #pragma once
 
 #include "error_no.h"
-#include "public/common.h"
-#include "public/buffer.hpp"
-#include "public/time/time.h"
-#include "public/gmonitor.h"
-#include "public/mem_profile.h"
+#include "../deps/public-cpp/include/public-cpp/common.h"
+#include "../deps/public-cpp/include/public-cpp/buffer.hpp"
+#include "../deps/public-cpp/include/public-cpp/time/time.h"
+#include "../deps/public-cpp/include/public-cpp/gmonitor.h"
+#include "../deps/public-cpp/include/public-cpp/mem_profile.h"
 #include "protocols/protocols.h"
 #include "handlers.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class MagnetoBase;
 
@@ -71,4 +71,4 @@ class Magneto {
   MagnetoBase* magneto_base_; 
 };
 
-}
+}}

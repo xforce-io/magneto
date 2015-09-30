@@ -2,7 +2,7 @@
 
 #include "../public.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 PoolConnsPerRemote::PoolConnsPerRemote(const Remote& remote, time_t long_conn_keepalive_sec) :
   remote_(remote),
@@ -78,4 +78,4 @@ void PoolConnsPerRemote::Put(int fd) {
   lock_fds_.Unlock();
 }
 
-}
+}}

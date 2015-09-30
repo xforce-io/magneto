@@ -3,7 +3,7 @@
 #include "public.h"
 #include "agents/agent_slave.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Confs;
 class EventCtx;
@@ -56,15 +56,15 @@ class Session {
   bool has_failure_;
 };
 
-}
+}}
 
 #include "conns_mgr/conns_mgr.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 bool Session::FinishTalk(bool succ, Talk& talk) {
   ++num_talks_done_;
-  MAG_BUG(num_talks_done_ > talks_->size())
+  XFC_BUG(num_talks_done_ > talks_->size())
 
   if (NULL != talk.remote) {
     conns_mgr_->ReportStatus(*(talk.remote), succ);
@@ -94,4 +94,4 @@ bool Session::FinishTalk(bool succ, Talk& talk) {
   return num_talks_done_ == talks_->size();
 }
 
-}
+}}

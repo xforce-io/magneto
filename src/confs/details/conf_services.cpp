@@ -1,7 +1,7 @@
 #include "../conf_services.h"
 #include "../../protocols/pool_protocols.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 const std::string ConfServices::kFilenameServicesConf = "services.conf";
 
@@ -15,17 +15,17 @@ bool ConfServices::Init(const std::string& filedir, const ConfNormal& conf_norma
   conf_normal_ = &conf_normal;
 
   conf_services_ = JsonType::CreateConf(filedir+"/"+kFilenameServicesConf);
-  MAG_FAIL_HANDLE_FATAL(NULL==conf_services_ || !conf_services_->IsDict(), 
+  XFC_FAIL_HANDLE_FATAL(NULL==conf_services_ || !conf_services_->IsDict(), 
       "fail_init_service_conf dir[" << filedir.c_str() << "]")
 
   conf_services_->DumpJson(ss);
   NOTICE("init_conf_services[" << ss.str() << "]");
 
   ret = BuildServices_((*conf_services_)["services"]);
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_build_services");
+  XFC_FAIL_HANDLE_FATAL(!ret, "fail_build_services");
 
   ret = BuildServicesSets_((*conf_services_)["services_sets"]);
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_build_services_sets");
+  XFC_FAIL_HANDLE_FATAL(!ret, "fail_build_services_sets");
   return true;
 
   ERROR_HANDLE:
@@ -33,19 +33,19 @@ bool ConfServices::Init(const std::string& filedir, const ConfNormal& conf_norma
 }
 
 ConfServices::~ConfServices() {
-  MAG_DELETE(conf_services_)
+  XFC_DELETE(conf_services_)
 
   ServicesSets::iterator iter_services_sets;
   for (
       iter_services_sets = services_sets_.begin();
       iter_services_sets != services_sets_.end();
       ++iter_services_sets) {
-    MAG_DELETE(iter_services_sets->second)
+    XFC_DELETE(iter_services_sets->second)
   }
 
   Services::iterator iter_services;
   for (iter_services = services_.begin(); iter_services != services_.end(); ++iter_services) {
-    MAG_DELETE(iter_services->second);
+    XFC_DELETE(iter_services->second);
   }
 }
 
@@ -61,10 +61,10 @@ bool ConfServices::BuildServicesSets_(const JsonType& conf) {
     std::pair<SetToServices::iterator, bool> ret_insert = 
       set_to_services_.insert(std::make_pair(iter->first, std::vector<std::string>()));
       
-    MAG_NEW_DECL(services_set, ServicesSet, ServicesSet)
+    XFC_NEW_DECL(services_set, ServicesSet, ServicesSet)
     for (size_t i=0; i < services_wt.AsList().size(); ++i) {
       if (!services_wt[i].IsStr()) {
-        MAG_DELETE(services_set)
+        XFC_DELETE(services_set)
         return false;
       }
 
@@ -72,7 +72,7 @@ bool ConfServices::BuildServicesSets_(const JsonType& conf) {
       Services::const_iterator iter = services_.find(service_name);
       if (services_.end() == iter) {
         WARN("no_service_defined[" << service_name << "]");
-        MAG_DELETE(services_set)
+        XFC_DELETE(services_set)
         return false;
       }
       services_set->push_back(iter->second);
@@ -90,10 +90,10 @@ bool ConfServices::BuildServices_(const JsonType& conf) {
   const JsonType::DictType& services = conf.AsDict();
   JsonType::DictType::const_iterator iter;
   for (iter = services.begin(); iter != services.end(); ++iter) {
-    MAG_NEW_DECL(service, Service, Service)
+    XFC_NEW_DECL(service, Service, Service)
     bool ret = BuildService_(no_service++, iter->first, iter->second, *service);
     if (!ret) {
-      MAG_DELETE(service)
+      XFC_DELETE(service)
       return false;
     }
 
@@ -112,9 +112,9 @@ bool ConfServices::BuildService_(
       service_tag, 
       service.name, 
       service.protocol_category);
-  MAG_FAIL_HANDLE(!ret)
+  XFC_FAIL_HANDLE(!ret)
 
-  MAG_FAIL_HANDLE(!service_desc.IsDict() || !service_desc["remotes"].IsList() )
+  XFC_FAIL_HANDLE(!service_desc.IsDict() || !service_desc["remotes"].IsList() )
 
   if (!service_desc["strategy"].IsStr()) {
     service.service_strategy = ServiceStrategy::kDefaultStrategy;
@@ -129,7 +129,7 @@ bool ConfServices::BuildService_(
   service.remotes.resize(service_desc["remotes"].AsList().size());
   for (size_t i=0; i < service_desc["remotes"].AsList().size(); ++i) {
     ret = BuildRemote_(service_desc["remotes"][i], service.remotes[i]);
-    MAG_FAIL_HANDLE(!ret)
+    XFC_FAIL_HANDLE(!ret)
 
     service.weight_all += service.remotes[i].weight;
   }
@@ -155,7 +155,7 @@ bool ConfServices::BuildRemote_(const JsonType& conf, Remote& remote) {
   if (!ret) return false;
 
   if (conf["weight"].IsInt()) {
-    MAG_FAIL_HANDLE(conf["weight"].AsInt() < 0)
+    XFC_FAIL_HANDLE(conf["weight"].AsInt() < 0)
     remote.weight = conf["weight"].AsInt();
   } else {
     remote.weight = conf_normal_->GetDefaultWeight();
@@ -188,7 +188,7 @@ bool ConfServices::BuildRemote_(const JsonType& conf, Remote& remote) {
   iter = remotes_.find(remote);
   if (remotes_.end() == iter) {
     remotes_.insert(remote);
-    MAG_FAIL_HANDLE_FATAL(
+    XFC_FAIL_HANDLE_FATAL(
         remotes_.size() > LocalLimits::kNumRemotes,
         "too_many_remotes[" << remotes_.size() << "|" << LocalLimits::kNumRemotes << "]")
   }  
@@ -198,4 +198,4 @@ bool ConfServices::BuildRemote_(const JsonType& conf, Remote& remote) {
   return false;
 }
 
-}
+}}

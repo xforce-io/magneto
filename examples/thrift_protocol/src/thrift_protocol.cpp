@@ -1,8 +1,8 @@
 #include "magneto.h"
 #include "gen-cpp/PingPongTest.h"
 
-namespace magneto {
-LOGGER_IMPL(magneto_logger, "magneto")
+namespace xforce {
+LOGGER_IMPL(xforce_logger, "magneto")
 }
 
 bool end=false;
@@ -74,12 +74,12 @@ int main() {
 
   // init service
   int ret = service->Init("conf/confs_server/", &Service, NULL, service, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_server")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_server")
 
   // init client
   client_handle.push_back(std::make_pair(ClientHandler, 100));
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_client")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
 
   delete client; delete service;
   return 0;

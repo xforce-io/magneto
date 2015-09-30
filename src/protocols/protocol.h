@@ -3,7 +3,7 @@
 #include "../public/common.h"
 #include "../public_model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 //typedef bool (*FuncReadChecker)(const char* buf, size_t count);
 
@@ -118,4 +118,4 @@ bool Addr::Assign(const std::string& addr_str) {
 ReqInfo::ReqInfo() :
   listen_addr(NULL) {} 
 
-}
+}}

@@ -3,7 +3,7 @@
 #include "public.h"
 #include "../event_ctx.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class MailboxNotifier {
  private:
@@ -30,4 +30,4 @@ void MailboxNotifier::ClearReadBuf(int fd) {
   while (read(fd, buf, sizeof(buf)) > 0) ;
 }
 
-}
+}}

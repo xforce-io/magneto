@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 #include "../../../src/magneto.h"
 
-namespace magneto {
-LOGGER_IMPL(magneto_logger, "magneto")
-}
+namespace xforce { namespace magneto {
+LOGGER_IMPL(xforce_logger, "magneto")
+}}
 
 magneto::Magneto server;
 
@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 void PingHandler(const magneto::ProtocolRead& protocol_read, void*) {
   const magneto::ProtocolReadPing& protocol_read_ping = SCAST<const magneto::ProtocolReadPing&>(protocol_read);
   if ( 1 != protocol_read_ping.Size() ) {
-    WARN_LOG(magneto::magneto_logger, "ret[" << protocol_read_ping.Size() << "]");
+    WARN_LOG(magneto::xforce_logger, "ret[" << protocol_read_ping.Size() << "]");
   }
 /*
   magneto::ProtocolRead* response;

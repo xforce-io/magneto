@@ -4,7 +4,7 @@
 #include "conf_normal.h"
 #include "versioned_conf_services.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ConfServices;
 
@@ -24,4 +24,4 @@ const ConfServices* Confs::GetConfServices(size_t version) const{
   return versioned_conf_services_.GetConf(version);
 }
 
-}
+}}

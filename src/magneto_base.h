@@ -3,7 +3,7 @@
 #include "public.h"
 #include "handlers.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Protocol;
 class Service;
@@ -78,12 +78,12 @@ class MagnetoBase {
   IOBasic* io_basic_;
 };
 
-}
+}}
 
 #include "biz_procedure.h"
 #include "io_basic/io_basic.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 const std::vector<std::string>* MagnetoBase::GetServiceNames(const std::string& services_set) {
   return confs_->GetConfServices()->GetServiceNames(services_set);
@@ -162,4 +162,4 @@ void MagnetoBase::FreeTalks() {
   return io_basic_->FreeTalks(*biz_procedure);
 }
 
-}
+}}

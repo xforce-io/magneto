@@ -1,8 +1,10 @@
 #include "magneto.h"
 
-namespace magneto {
-LOGGER_IMPL(magneto_logger, "magneto")
+namespace xforce {
+LOGGER_IMPL(xforce_logger, "magneto")
 }
+
+using namespace xforce;
 
 static const size_t kNumClients=50;
 static const size_t kNumReqs=500000;
@@ -13,10 +15,10 @@ int succ=0;
 bool end=false;
 
 void ClientHandler(void* args) {
-  magneto::Timer timer;
+  Timer timer;
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
   while ( __sync_sub_and_fetch(&num_reqs, 1) >= 0 ) {
-    client.Write("agent", magneto::Buf(magneto::Slice(RCAST<const char*>(&kInput), 1), NULL), 100);
+    client.Write("agent", magneto::Buf(Slice(RCAST<const char*>(&kInput), 1), NULL), 100);
     client.FreeTalks();
   }
 
@@ -33,14 +35,14 @@ void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
   if (magneto::Protocol::kRapid == protocol_read.GetCategory()) {
     const magneto::ProtocolReadRapid& protocol_read_rapid = SCAST<const magneto::ProtocolReadRapid&>(protocol_read);
 
-    magneto::Buf buf(magneto::Slice(protocol_read_rapid.Data(), 1), NULL);
+    magneto::Buf buf(Slice(protocol_read_rapid.Data(), 1), NULL);
     magneto::Bufs bufs;
     bufs.push_back(&buf);
     bufs.push_back(&buf);
     magneto::Errors errors;
     agent.Write("consumers", bufs, 100, errors);
   } else if (magneto::Protocol::kPing == protocol_read.GetCategory()) {
-    agent.WriteBack(magneto::Buf(magneto::Slice("p", 1), NULL), 100);
+    agent.WriteBack(magneto::Buf(Slice("p", 1), NULL), 100);
   }
 }
 
@@ -63,17 +65,17 @@ int main() {
   magneto::RoutineItems client_handle;
 
   int ret = agent->Init("conf/agent/", &AgentService, NULL, agent, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_agent")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_agent")
 
   ret = consumer0->Init("conf/consumer0/", &ConsumerService, NULL, consumer0, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_plus_master")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_plus_master")
 
   ret = consumer1->Init("conf/consumer1/", &ConsumerService, NULL, consumer1, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_plus_slave")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_plus_slave")
 
   client_handle.push_back(std::make_pair(ClientHandler, kNumClients));
   ret = client->Init("conf/client/", NULL, &client_handle, client, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_client")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
 
   client->Stop();
   delete [] servers;

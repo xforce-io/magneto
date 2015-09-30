@@ -4,7 +4,7 @@
 #include "../handlers.h"
 #include "../msg.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Confs;
 class Agents;
@@ -68,11 +68,11 @@ class Scheduler {
   bool end_;
 };
 
-}
+}}
 
 #include "../biz_procedure.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 bool Scheduler::SendMsg(Msg& msg) {
   return GetMailbox().SendMsg(true, RCAST<const char*>(&msg), msg.size);
@@ -93,4 +93,4 @@ void Scheduler::ConsumeTask_() {
   task_queue_.pop_front();
 }
 
-}
+}}

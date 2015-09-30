@@ -2,7 +2,7 @@
 
 #include "../protocol.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ProtocolWritePing : public ProtocolWrite {
  public:
@@ -50,4 +50,4 @@ void ProtocolReadPing::Reset(const ListenAddr* listen_addr) {
   Super::Reset(listen_addr);
 }
 
-}
+}}

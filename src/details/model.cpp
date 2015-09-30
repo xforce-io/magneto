@@ -1,6 +1,6 @@
 #include "../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void Talk::Assign(
     size_t no_talk_arg,
@@ -74,8 +74,8 @@ void Talk::Assign(
       break;
     }
     default :
-      MAG_BUG(true)
+      XFC_BUG(true)
   }
 }
 
-}
+}}

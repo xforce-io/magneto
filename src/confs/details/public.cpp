@@ -1,7 +1,7 @@
 #include "../public.h"
 #include "../../protocols/pool_protocols.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 bool ConfHelper::ParseServiceTag(
     const std::string& service_tag,
@@ -20,4 +20,4 @@ bool ConfHelper::ParseServiceTag(
   return true;
 }
 
-}
+}}

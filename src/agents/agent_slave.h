@@ -5,7 +5,7 @@
 #include "../msg.h"
 #include "mailbox_notifier.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Confs;
 class Schedulers;
@@ -91,8 +91,6 @@ class AgentSlave {
 
   int num_clients_keepalive_;
 
-  DelayCloseFds delay_close_fds_;
-
   MsgNewReq tmp_msg_new_req_;
   MsgSession tmp_msg_session_;
   MsgDestruct tmp_msg_destruct_;
@@ -100,19 +98,19 @@ class AgentSlave {
   bool end_;
 };
 
-}
+}}
 
 #include "../schedulers/scheduler.h"
 #include "../event_ctx.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 bool AgentSlave::SendMsg(Msg& msg) {
   return mailbox_.SendMsg(true, RCAST<const char*>(&msg), msg.size);
 }
 
 void AgentSlave::SendBackMsg_(Msg& msg) {
-  MAG_BUG(Msg::kSession != msg.category)
+  XFC_BUG(Msg::kSession != msg.category)
 
   MsgSession& msg_session = SCAST<MsgSession&>(msg);
   Scheduler& scheduler = *(msg_session.biz_procedure->GetScheduler());
@@ -149,7 +147,7 @@ void AgentSlave::CloseFdClient_(int& fd) {
 }
 
 void AgentSlave::CloseFd_(int& fd) {
-  delay_close_fds_.Close(fd);
+  IOHelper::Close(fd);
   fd=-1;
 }
 
@@ -178,4 +176,4 @@ bool AgentSlave::CheckEventCtxTimeout_(EventCtx& event_ctx, time_t timeleft_ms) 
   return true;
 }
 
-}
+}}
