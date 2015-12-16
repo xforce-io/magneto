@@ -2,7 +2,7 @@
 
 #include "public/common.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 struct ErrorNo {
   static const int64_t kOk=0;
@@ -18,4 +18,4 @@ struct ErrorNo {
   static const int64_t kOther=-100;
 };
 
-}
+}}

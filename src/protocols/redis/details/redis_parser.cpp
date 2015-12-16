@@ -1,6 +1,6 @@
 #include "../redis_parser.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 int RedisParser::ParseReply(const std::string& reply, bool* is_pong, size_t* size_reply, std::string* out) {
   if (0 == reply.length() || NULL==is_pong || NULL==size_reply || NULL==out) return -1;
@@ -149,4 +149,4 @@ int RedisParser::ParseReplySeg_(
   return 0;
 }
 
-}
+}}

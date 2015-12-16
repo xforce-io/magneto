@@ -4,7 +4,7 @@
 #include "../protocols/pool_protocols.h"
 #include "../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ConfNormal {
  public:
@@ -52,4 +52,4 @@ class ConfNormal {
   size_t default_weight_;
 };
 
-}
+}}

@@ -3,7 +3,7 @@
 #include "public.h"
 #include "protocols/protocol.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ConfServices;
 class Talk;
@@ -136,20 +136,20 @@ void Msg::Copy(const Msg& msg) {
     case Msg::kConfig :
       SCAST<MsgConfig&>(*this) = SCAST<const MsgConfig&>(msg);
       break;
-    case Msg::kReadReq : 
+    case Msg::kReadReq :
       SCAST<MsgReadReq&>(*this) = SCAST<const MsgReadReq&>(msg);
       break;
     case Msg::kNewReq :
       SCAST<MsgNewReq&>(*this) = SCAST<const MsgNewReq&>(msg);
       break;
-    case Msg::kSession : 
+    case Msg::kSession :
       SCAST<MsgSession&>(*this) = SCAST<const MsgSession&>(msg);
       break;
-    case Msg::kDestruct : 
+    case Msg::kDestruct :
       SCAST<MsgDestruct&>(*this) = SCAST<const MsgDestruct&>(msg);
       break;
     default :
-      MAG_BUG(true)
+      XFC_BUG(true)
   }
 }
 
@@ -179,4 +179,4 @@ void MsgNewReq::BuildForNewReq(
   protocol_read=protocol_read_arg;
 }
 
-}
+}}

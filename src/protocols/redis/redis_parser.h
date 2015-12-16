@@ -2,7 +2,7 @@
 
 #include "../public.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
  
 class RedisParser {
  public:
@@ -16,4 +16,4 @@ class RedisParser {
   static int ParseReplySeg_(const std::string& reply, size_t start, size_t* size_reply, std::string* out);
 };
 
-}
+}}

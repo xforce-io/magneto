@@ -3,7 +3,7 @@
 #include "public.h"
 #include "protocols/pool_protocols.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Session;
 
@@ -95,4 +95,4 @@ void EventCtx::BuildForMailboxNotify(int fd_arg) {
   fd=fd_arg;
 }
 
-}
+}}

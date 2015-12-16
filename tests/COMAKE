@@ -2,7 +2,6 @@ ROOTDIR('../../../xlib')
 CXXFLAGS('-g -W -Wall -Dprivate=public  -Dprotected=public -Wno-deprecated -Wno-invalid-offsetof -fno-builtin-memcmp -Wno-strict-aliasing -DONLINE_TEST -DUT_TEST -O2')
 
 for file in SRC(
-    ' src/public/test_*.cpp '
     ' src/confs/test_*.cpp '
     ' src/magneto/test_*.cpp '
     ' src/protocols/test_*.cpp '
@@ -11,11 +10,6 @@ for file in SRC(
     ' src/test_*.cpp '
     ) :
   APP('bin/' + file[file.rfind('/')+1:].replace('.cpp', ''), file + 
-      ' ../src/public/thread_privacy/details/*.cpp '
-      ' ../src/public/jsontype/details/*.cpp '
-      ' ../src/public/mpsc_fixed_pipe/details/*.cpp '
-      ' ../src/public/time/details/*.cpp '
-      ' ../src/public/details/*.cpp '
       ' ../src/confs/details/*.cpp '
       ' ../src/protocols/details/*.cpp '
       ' ../src/protocols/redis/details/*.cpp '

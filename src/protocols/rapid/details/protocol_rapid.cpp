@@ -1,7 +1,7 @@
 #include "../protocol_rapid.h"
 #include "../../public.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 int ProtocolWriteRapid::Write(int fd) {
   int ret = IOHelper::WriteVecNonBlock(fd, tmp_iovs_, tmp_num_iovs_);
@@ -55,4 +55,4 @@ int ProtocolReadRapid::Read(int fd) {
   }
 }
 
-}
+}}

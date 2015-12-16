@@ -1,6 +1,6 @@
 #include "../protocol.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void ProtocolRead::Reset(const ListenAddr* listen_addr) {
   if (NULL!=listen_addr) {
@@ -8,4 +8,4 @@ void ProtocolRead::Reset(const ListenAddr* listen_addr) {
   }
 }
 
-}
+}}

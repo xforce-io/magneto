@@ -3,9 +3,9 @@
 
 using namespace magneto;
 
-namespace magneto {
-LOGGER_IMPL(magneto_logger, "magneto")
-}
+namespace xforce { namespace magneto {
+LOGGER_IMPL(xforce_logger, "magneto")
+}}
 
 int main(int argc, char** argv) {
   srand(time(NULL));

@@ -1,7 +1,7 @@
 #include "../protocol_redis.h"
 #include "../redis_parser.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 bool ProtocolWriteRedis::Encode() {
   return RedisParser::ParseCmd(in_, &out_);
@@ -18,7 +18,7 @@ int ProtocolWriteRedis::Write(int fd) {
 }
 
 ProtocolReadRedis::ProtocolReadRedis() {
-  MAG_NEW(tmpbuf_, char [kTmpBufSize+1])
+  XFC_NEW(tmpbuf_, char [kTmpBufSize+1])
 }
 
 int ProtocolReadRedis::Read(int fd) { 
@@ -43,7 +43,7 @@ int ProtocolReadRedis::Read(int fd) {
 }
 
 ProtocolReadRedis::~ProtocolReadRedis() {
-  MAG_DELETE_ARRAY(tmpbuf_)
+  XFC_DELETE_ARRAY(tmpbuf_)
 }
 
-}
+}}

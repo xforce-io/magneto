@@ -2,7 +2,7 @@
 
 #include "../protocol.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ProtocolWriteRedis : public ProtocolWrite {
  public:
@@ -62,4 +62,4 @@ void ProtocolReadRedis::Reset(const ListenAddr* listen_addr) {
   out_.clear();
 }
 
-}
+}}

@@ -5,7 +5,7 @@
 #include "../model.h"
 #include "../confs/conf_services.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ConnsMgr {
  private:
@@ -97,7 +97,7 @@ void ConnsMgr::ReportStatus(const Remote& remote, bool status) {
 std::pair<int, bool> ConnsMgr::GetFd_(const Remote& remote) {
   PoolConnsPerRemote** pool = conns_.Get(remote);
   if (unlikely(NULL==pool)) {
-    MAG_NEW_DECL(pool_conns_per_remote, PoolConnsPerRemote, PoolConnsPerRemote(remote, long_conn_keepalive_sec_))
+    XFC_NEW_DECL(pool_conns_per_remote, PoolConnsPerRemote, PoolConnsPerRemote(remote, long_conn_keepalive_sec_))
     conns_.Insert(remote, pool_conns_per_remote);
     return pool_conns_per_remote->Get();
   }
@@ -113,7 +113,7 @@ const Remote* ConnsMgr::GetRemote_(
     case ServiceStrategy::kWeight :
       return GetRemoteWeight_(service, fail_remotes);
     default :
-      MAG_BUG(true)
+      XFC_BUG(true)
   }
   return NULL;
 }
@@ -154,4 +154,4 @@ bool ConnsMgr::FailedBefore_(
   return false;
 }
 
-}
+}}

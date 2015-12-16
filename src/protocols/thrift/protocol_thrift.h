@@ -1,12 +1,12 @@
 #pragma once
 
 #include "../protocol.h"
-#include "../../public/buffer.hpp"
+#include "../../../deps/public-cpp/include/public-cpp/buffer.hpp"
 #include "t_simple_protocol.h"
 
 #ifdef MAGNETO_THRIFT_SUPPORT
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 /*
  * TFramedTransport + TBinaryProtocol
@@ -112,6 +112,6 @@ void ProtocolReadThrift::Reset(const ListenAddr* listen_addr) {
   read_header_=true;
 }
   
-}
+}}
 
 #endif

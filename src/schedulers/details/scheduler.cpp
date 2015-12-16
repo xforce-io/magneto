@@ -3,7 +3,7 @@
 #include "../../ctx_helper.h"
 #include "../../confs/confs.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 Scheduler::Scheduler() :
   default_notifier_(NULL),
@@ -28,7 +28,7 @@ bool Scheduler::Init(
     is_req_scheduler_=false;
   }
 
-  MAG_NEW(default_notifier_, DefaultNotifier)
+  XFC_NEW(default_notifier_, DefaultNotifier)
 
   int ret = default_notifier_->Init() 
     && mailbox_.Init(
@@ -41,9 +41,9 @@ bool Scheduler::Init(
     return false;
   }
 
-  MAG_NEW(pool_biz_procedure_, PoolObjsInit<BizProcedure>(
+  XFC_NEW(pool_biz_procedure_, PoolObjsInit<BizProcedure>(
       BizProcedure(agents, size_stack_, args, *this)))
-  MAG_NEW(pool_msgs_, PoolObjs<Msg> [Msg::kNumMsgCategories])
+  XFC_NEW(pool_msgs_, PoolObjs<Msg> [Msg::kNumMsgCategories])
   return true;
 }
 
@@ -66,9 +66,9 @@ void Scheduler::Stop() {
 
 Scheduler::~Scheduler() {
   Stop();
-  MAG_DELETE_ARRAY(pool_msgs_)
-  MAG_DELETE(pool_biz_procedure_)
-  MAG_DELETE(default_notifier_)
+  XFC_DELETE_ARRAY(pool_msgs_)
+  XFC_DELETE(pool_biz_procedure_)
+  XFC_DELETE(default_notifier_)
 }
 
 void* Scheduler::Run_(void* args) {
@@ -108,25 +108,25 @@ void Scheduler::Process_() {
     const Msg& cur_msg = *RCAST<const Msg*>(msg->content);
     Msg* new_msg = pool_msgs_[cur_msg.category].Get();
     if (unlikely(cur_msg.category != new_msg->category)) {
-      MAG_DELETE(new_msg)
+      XFC_DELETE(new_msg)
       switch (cur_msg.category) {
         case Msg::kConfig :
-          MAG_NEW(new_msg, MsgConfig)
+          XFC_NEW(new_msg, MsgConfig)
           break;
         case Msg::kReadReq :
-          MAG_NEW(new_msg, MsgReadReq)
+          XFC_NEW(new_msg, MsgReadReq)
           break;
         case Msg::kNewReq :
-          MAG_NEW(new_msg, MsgNewReq)
+          XFC_NEW(new_msg, MsgNewReq)
           break;
         case Msg::kSession :
-          MAG_NEW(new_msg, MsgSession)
+          XFC_NEW(new_msg, MsgSession)
           break;
         case Msg::kDestruct :
-          MAG_NEW(new_msg, MsgDestruct)
+          XFC_NEW(new_msg, MsgDestruct)
           break;
         default :
-          MAG_BUG(true)
+          XFC_BUG(true)
       }
     }
     new_msg->Copy(cur_msg);
@@ -149,22 +149,22 @@ void Scheduler::Process_() {
       msg_session.biz_procedure->SetMsgSession(msg_session);
 
       int ret = BizProcedure::SetCurrentBizProcedure(*(msg_session.biz_procedure));
-      MAG_FAIL_HANDLE_FATAL(true!=ret, "fail_set_cur_biz_procedure")
+      XFC_FAIL_HANDLE_FATAL(true!=ret, "fail_set_cur_biz_procedure")
 
       ret = swapcontext(&ctx_, msg_session.biz_ctx);
-      MAG_FAIL_HANDLE_FATAL(0!=ret, "fail_swapcontext_in_scheduler")
+      XFC_FAIL_HANDLE_FATAL(0!=ret, "fail_swapcontext_in_scheduler")
     } else if (Msg::kNewReq == msg->category) {
       MsgNewReq& msg_new_req = *SCAST<MsgNewReq*>(msg);
       BizProcedure* biz_procedure = pool_biz_procedure_->Get();
       biz_procedure->Procedure(msg_new_req, &ctx_);
 
       int ret = BizProcedure::SetCurrentBizProcedure(*biz_procedure);
-      MAG_FAIL_HANDLE_FATAL(true!=ret, "fail_set_cur_biz_procedure")
+      XFC_FAIL_HANDLE_FATAL(true!=ret, "fail_set_cur_biz_procedure")
 
       ret = swapcontext(&ctx_, &(biz_procedure->GetCtx()));
-      MAG_FAIL_HANDLE_FATAL(0!=ret, "fail_swapcontext_in_scheduler")
+      XFC_FAIL_HANDLE_FATAL(0!=ret, "fail_swapcontext_in_scheduler")
     } else {
-      MAG_BUG(true)
+      XFC_BUG(true)
     }
     pool_msgs_[msg->category].Free(msg);
     ConsumeTask_();
@@ -176,4 +176,4 @@ void Scheduler::Process_() {
   }
 }
 
-}
+}}

@@ -6,7 +6,7 @@
 #include "../../agents/agents.h"
 #include "../../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 IOBasicTPD::IOBasicTPD(const Confs& confs, Agents& agents) :
   init_(false),
@@ -20,7 +20,7 @@ int IOBasicTPD::Write(
     const Bufs& bufs,
     time_t timeo_ms,
     Errors& errors) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int ret;
 
@@ -44,10 +44,10 @@ int IOBasicTPD::Write(
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   errors.reserve(services_set.size());
   for (size_t i=0; i < services_set.size(); ++i) {
@@ -62,7 +62,7 @@ int IOBasicTPD::Write(
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
   return ErrorNo::kOk;
 
   ERROR_HANDLE:
@@ -75,7 +75,7 @@ int IOBasicTPD::Read(
     const ServicesSet& services_set,
     time_t timeo_ms,
     Responses& responses) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int ret;
 
@@ -99,10 +99,10 @@ int IOBasicTPD::Read(
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   responses.resize(services_set.size());
   for (size_t i=0; i < services_set.size(); ++i) {
@@ -118,7 +118,7 @@ int IOBasicTPD::Read(
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
   return ErrorNo::kOk;
 
   ERROR_HANDLE:
@@ -132,7 +132,7 @@ int IOBasicTPD::Talks(
     const Bufs& bufs,
     time_t timeo_ms,
     Responses& responses) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int ret;
 
@@ -156,10 +156,10 @@ int IOBasicTPD::Talks(
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   responses.resize(services_set.size());
   for (size_t i=0; i < services_set.size(); ++i) {
@@ -175,7 +175,7 @@ int IOBasicTPD::Talks(
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
   return ErrorNo::kOk;
 
   ERROR_HANDLE:
@@ -188,7 +188,7 @@ int IOBasicTPD::Write(
     const Service& service,
     const Buf& buf, 
     time_t timeo_ms) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int ret;
   int fd;
@@ -207,15 +207,15 @@ int IOBasicTPD::Write(
       timeo_ms, 
       fd, 
       remote);
-  MAG_FAIL_HANDLE_AND_SET(ErrorNo::kOk != (*talks)[0].error, ret = (*talks)[0].error)
+  XFC_FAIL_HANDLE_AND_SET(ErrorNo::kOk != (*talks)[0].error, ret = (*talks)[0].error)
 
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   if (talk.fd > 0) {
     biz_procedure.InsertFdIntoServiceCache(service, talk.fd, *(talk.remote));
@@ -224,7 +224,7 @@ int IOBasicTPD::Write(
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
 
   return ErrorNo::kOk;
 
@@ -238,7 +238,7 @@ int IOBasicTPD::Read(
     const Service& service, 
     time_t timeo_ms, 
     ProtocolRead*& protocol_read) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int fd;
   const Remote* remote=NULL;
@@ -260,10 +260,10 @@ int IOBasicTPD::Read(
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   int ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   if (talk.fd > 0) {
     biz_procedure.InsertFdIntoServiceCache(service, talk.fd, *(talk.remote));
@@ -272,7 +272,7 @@ int IOBasicTPD::Read(
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
 
   protocol_read = talk.protocol_read;
   return ErrorNo::kOk;
@@ -288,7 +288,7 @@ int IOBasicTPD::SimpleTalk(
     IN const Buf& buf,
     IN time_t timeo_ms,
     OUT ProtocolRead*& protocol_read) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int ret;
   int fd;
@@ -307,15 +307,15 @@ int IOBasicTPD::SimpleTalk(
       timeo_ms, 
       fd, 
       remote);
-  MAG_FAIL_HANDLE_AND_SET(ErrorNo::kOk != (*talks)[0].error, ret = (*talks)[0].error)
+  XFC_FAIL_HANDLE_AND_SET(ErrorNo::kOk != (*talks)[0].error, ret = (*talks)[0].error)
 
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   if (talk.fd > 0) {
     biz_procedure.InsertFdIntoServiceCache(service, talk.fd, *(talk.remote));
@@ -324,7 +324,7 @@ int IOBasicTPD::SimpleTalk(
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
 
   protocol_read = talk.protocol_read;
   return ErrorNo::kOk;
@@ -335,7 +335,7 @@ int IOBasicTPD::SimpleTalk(
 }
 
 int IOBasicTPD::WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms) {
-  MAG_RAII_INIT(ErrorNo::kOther)
+  XFC_RAII_INIT(ErrorNo::kOther)
 
   int ret;
   biz_procedure.SetWriteBackCalled();
@@ -352,22 +352,22 @@ int IOBasicTPD::WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t ti
       timeo_ms, 
       biz_procedure.GetFdClient(), 
       NULL);
-  MAG_FAIL_HANDLE_AND_SET(ErrorNo::kOk != (*talks)[0].error, ret = (*talks)[0].error)
+  XFC_FAIL_HANDLE_AND_SET(ErrorNo::kOk != (*talks)[0].error, ret = (*talks)[0].error)
 
   tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, *talks, timeo_ms, ErrorNo::kOk);
 
   ret = agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_);
-  MAG_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
+  XFC_FAIL_HANDLE_AND_SET(true!=ret, ret = ErrorNo::kQueueBusy)
 
   ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
-  MAG_BUG(0!=ret)
+  XFC_BUG(0!=ret)
 
   if (talk.fd <= 0) {
     biz_procedure.SetFdClientInvalid();
   }
 
   ret = biz_procedure.GetMsgSession()->error;
-  MAG_FAIL_HANDLE(ErrorNo::kOk != ret)
+  XFC_FAIL_HANDLE(ErrorNo::kOk != ret)
 
   return ErrorNo::kOk;
 
@@ -377,11 +377,11 @@ int IOBasicTPD::WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t ti
 }
 
 IOBasicTPD::~IOBasicTPD() {
-  MAG_DELETE(tmp_msg_session_)
+  XFC_DELETE(tmp_msg_session_)
 }
 
 bool IOBasicTPD::Init_() {
-  MAG_NEW(tmp_msg_session_, MsgSession)
+  XFC_NEW(tmp_msg_session_, MsgSession)
   init_=true;
   return true;
 }
@@ -392,12 +392,12 @@ IOBasic::IOBasic() :
 bool IOBasic::Init(const Confs& confs, Agents& agents) {
   confs_ = &confs;
   agents_ = &agents;
-  MAG_NEW(tmp_io_basic_, IOBasicTPD(confs, agents))
+  XFC_NEW(tmp_io_basic_, IOBasicTPD(confs, agents))
   return true;
 }
 
 IOBasic::~IOBasic() {
-  MAG_DELETE(tmp_io_basic_)
+  XFC_DELETE(tmp_io_basic_)
 }
 
-}
+}}

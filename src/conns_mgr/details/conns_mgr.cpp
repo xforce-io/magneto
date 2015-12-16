@@ -1,6 +1,6 @@
 #include "../conns_mgr.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 ConnsMgr::ConnsMgr(time_t long_conn_keepalive_sec) :
   long_conn_keepalive_sec_(long_conn_keepalive_sec) {
@@ -12,7 +12,7 @@ void ConnsMgr::ConfigRemotes(const ConfServices::Remotes& remotes) {
   for (iter = remotes.begin(); iter != remotes.end(); ++iter) {
     PoolConnsPerRemote** pool = conns_.Get(*iter);
     if (unlikely(NULL==pool)) {
-      MAG_NEW_DECL(
+      XFC_NEW_DECL(
           pool_conns_per_remote, 
           PoolConnsPerRemote,
           PoolConnsPerRemote(*iter, long_conn_keepalive_sec_))
@@ -27,7 +27,7 @@ void ConnsMgr::ConfigRemotes(const ConfServices::Remotes& remotes) {
     ConfServices::Remotes::const_iterator iter_remote = remotes.find(iter_2->first);
     if (remotes.end() == iter_remote) {
       PoolConnsPerRemote** pool = conns_.Get(iter_2->first);
-      MAG_DELETE(*pool)
+      XFC_DELETE(*pool)
 
       unhealthy_guys_.erase(iter_2->first);
       conns_.Erase(iter_2->first);
@@ -84,8 +84,8 @@ const Remote* ConnsMgr::GetRemoteWeight_(
 ConnsMgr::~ConnsMgr() {
   Container::Iterator iter;
   for (iter = conns_.Begin(); !iter.IsEnd(); iter.Next()) {
-    MAG_DELETE(iter->second)
+    XFC_DELETE(iter->second)
   }
 }
 
-}
+}}

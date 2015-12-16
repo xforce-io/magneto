@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../protocol.h"
-#include "../../public/buffer.hpp"
+#include "../../../deps/public-cpp/include/public-cpp/buffer.hpp"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 struct RapidHeader {
   static const uint16_t kMagic=58764;
@@ -112,4 +112,4 @@ const char* ProtocolReadRapid::Data() const {
   return buffer_.Start() + sizeof(RapidHeader); 
 }
 
-}
+}}

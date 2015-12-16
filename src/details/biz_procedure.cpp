@@ -3,7 +3,7 @@
 #include "../confs/versioned_conf_services.h"
 #include "../agents/agents.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 ThreadPrivacy BizProcedure::thread_privacy_;
 
@@ -24,17 +24,17 @@ BizProcedure::BizProcedure(
   init_(false) {}
 
 BizProcedure::~BizProcedure() {
-  MAG_DELETE(tmp_msg_destruct_)
-  MAG_DELETE(ctx_)
-  MAG_FREE(stack_)
-  MAG_DELETE(pool_talks_)
+  XFC_DELETE(tmp_msg_destruct_)
+  XFC_DELETE(ctx_)
+  XFC_FREE(stack_)
+  XFC_DELETE(pool_talks_)
 }
 
 bool BizProcedure::Init_() {
-  MAG_NEW(pool_talks_, PoolTalks(1, 1024, false, true, 1))
-  MAG_NEW(ctx_, ucontext_t)
-  MAG_MALLOC(stack_, char*, size_stack_)
-  MAG_NEW(tmp_msg_destruct_, MsgDestruct)
+  XFC_NEW(pool_talks_, PoolTalks(1, 1024, false, true, 1))
+  XFC_NEW(ctx_, ucontext_t)
+  XFC_MALLOC(stack_, char*, size_stack_)
+  XFC_NEW(tmp_msg_destruct_, MsgDestruct)
 
   int ret = getcontext(ctx_);
   if (0!=ret) return false;
@@ -46,4 +46,4 @@ bool BizProcedure::Init_() {
   return true;
 }
 
-}
+}}

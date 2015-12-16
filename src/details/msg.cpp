@@ -1,7 +1,7 @@
 #include "../msg.h"
 #include "../biz_procedure.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void MsgSession::BuildForSession(
     ucontext_t& biz_ctx_arg,
@@ -38,11 +38,11 @@ void MsgDestruct::BuildForDestruct(
     big_cache = NULL;
   } else {
     typedef std::vector< std::pair<int, const Remote*> > BigCache;
-    MAG_NEW(big_cache, BigCache)
+    XFC_NEW(big_cache, BigCache)
     for (iter = service_cache.begin(); iter != service_cache.end(); ++iter) {
       big_cache->push_back(iter->second);
     }
   }
 }
 
-}
+}}

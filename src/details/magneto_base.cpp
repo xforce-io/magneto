@@ -10,7 +10,7 @@
 #include "lib/public/public.h"
 #endif
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 MagnetoBase::MagnetoBase() :
   confs_(NULL),
@@ -29,38 +29,47 @@ bool MagnetoBase::Init(
   InitSignals_();
 
   int ret;
-  MAG_NEW(confs_, Confs)
+  XFC_NEW(confs_, Confs)
   ret = confs_->Init(conf_service_dir);
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_load_versioned_conf_services[" << conf_service_dir << "]")
+  XFC_FAIL_HANDLE_FATAL(!ret, "fail_load_versioned_conf_services[" << conf_service_dir << "]")
 
   NOTICE("succ_init_conf[" << conf_service_dir << "]");
 
-  MAG_NEW(schedulers_, Schedulers)
-  MAG_NEW(agents_, Agents)
+  XFC_NEW(schedulers_, Schedulers)
+  XFC_NEW(agents_, Agents)
 
   ret = schedulers_->Init(*confs_, *agents_, req_handler, routine_items, args);
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_init_schedulers")
+  XFC_FAIL_HANDLE_FATAL(!ret, "fail_init_schedulers")
 
   ret = agents_->Init(*confs_, *schedulers_);
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_init_agents")
+  XFC_FAIL_HANDLE_FATAL(!ret, "fail_init_agents")
 
-  MAG_NEW(io_basic_, IOBasic)
+  XFC_NEW(io_basic_, IOBasic)
   ret = io_basic_->Init(*confs_, *agents_);
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_init_io_basic")
-
-  ret = agents_->Start();
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_start_agents")
-
-  ret = schedulers_->Start();
-  MAG_FAIL_HANDLE_FATAL(!ret, "fail_start_schedulers")
+  XFC_FAIL_HANDLE_FATAL(!ret, "fail_init_io_basic")
   return true;
 
   ERROR_HANDLE:
-  MAG_DELETE(io_basic_)
-  MAG_DELETE(agents_)
-  MAG_DELETE(schedulers_)
-  MAG_DELETE(confs_)
+  XFC_DELETE(io_basic_)
+  XFC_DELETE(agents_)
+  XFC_DELETE(schedulers_)
+  XFC_DELETE(confs_)
   return false;
+}
+
+bool MagnetoBase::Start() {
+  bool ret = agents_->Start();
+  if (!ret) {
+      FATAL("fail_start_agents");
+      return false;
+  }
+
+  ret = schedulers_->Start();
+  if (!ret) {
+      FATAL("fail_start_schedulers");
+      return false;
+  }
+  return true;
 }
 
 void MagnetoBase::Stop() {
@@ -79,10 +88,10 @@ void MagnetoBase::Stop() {
 
 MagnetoBase::~MagnetoBase() {
   Stop();
-  MAG_DELETE(io_basic_)
-  MAG_DELETE(agents_)
-  MAG_DELETE(schedulers_)
-  MAG_DELETE(confs_)
+  XFC_DELETE(io_basic_)
+  XFC_DELETE(agents_)
+  XFC_DELETE(schedulers_)
+  XFC_DELETE(confs_)
 }
 
 void MagnetoBase::InitSignals_() {
@@ -95,4 +104,4 @@ void MagnetoBase::InitSignals_() {
   sigaction(SIGCHLD, &sa, 0);
 }
 
-}
+}}
