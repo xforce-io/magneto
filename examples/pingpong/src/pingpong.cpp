@@ -45,6 +45,9 @@ int main() {
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
   XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
 
+  ret = server->Start() && client->Start();
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
+
   delete client; delete server;
   return 0;
 

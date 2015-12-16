@@ -77,6 +77,9 @@ int main() {
   ret = client->Init("conf/client/", NULL, &client_handle, client, end);
   XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
 
+  ret = agent->Start() && consumer0->Start() && consumer1->Start() && client->Start();
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
+
   client->Stop();
   delete [] servers;
   return 0;

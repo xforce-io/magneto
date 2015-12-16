@@ -16,6 +16,10 @@ bool Magneto::Init(
   return magneto_base_->Init(conf_service_dir, req_handler, routine_items, args, end);
 }
 
+bool Magneto::Start() {
+    return magneto_base_->Start();
+}
+
 const std::vector<std::string>* Magneto::GetServiceNames(const std::string& services_set) {
   return magneto_base_->GetServiceNames(services_set);
 }
@@ -73,8 +77,8 @@ void Magneto::FreeTalks() {
   return magneto_base_->FreeTalks();
 }
 
-void Magneto::Stop() { 
-  magneto_base_->Stop(); 
+void Magneto::Stop() {
+  magneto_base_->Stop();
 }
 
 Magneto::~Magneto() {

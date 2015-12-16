@@ -47,12 +47,6 @@ bool MagnetoBase::Init(
   XFC_NEW(io_basic_, IOBasic)
   ret = io_basic_->Init(*confs_, *agents_);
   XFC_FAIL_HANDLE_FATAL(!ret, "fail_init_io_basic")
-
-  ret = agents_->Start();
-  XFC_FAIL_HANDLE_FATAL(!ret, "fail_start_agents")
-
-  ret = schedulers_->Start();
-  XFC_FAIL_HANDLE_FATAL(!ret, "fail_start_schedulers")
   return true;
 
   ERROR_HANDLE:
@@ -61,6 +55,21 @@ bool MagnetoBase::Init(
   XFC_DELETE(schedulers_)
   XFC_DELETE(confs_)
   return false;
+}
+
+bool MagnetoBase::Start() {
+  bool ret = agents_->Start();
+  if (!ret) {
+      FATAL("fail_start_agents");
+      return false;
+  }
+
+  ret = schedulers_->Start();
+  if (!ret) {
+      FATAL("fail_start_schedulers");
+      return false;
+  }
+  return true;
 }
 
 void MagnetoBase::Stop() {

@@ -24,6 +24,8 @@ class Magneto {
       void* args,
       bool& end);
 
+  bool Start();
+
   const std::vector<std::string>* GetServiceNames(const std::string& services_set);
 
   int Write(
@@ -45,7 +47,7 @@ class Magneto {
 
   int Write(
       const std::string& service, 
-      const Buf& buf, 
+      const Buf& buf,
       time_t timeo_ms); 
 
   int Read(

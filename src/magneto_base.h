@@ -23,6 +23,8 @@ class MagnetoBase {
       void* args,
       bool& end);
 
+  bool Start();
+
   inline const std::vector<std::string>* GetServiceNames(const std::string& services_set);
 
   inline int Write(

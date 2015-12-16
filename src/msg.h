@@ -136,16 +136,16 @@ void Msg::Copy(const Msg& msg) {
     case Msg::kConfig :
       SCAST<MsgConfig&>(*this) = SCAST<const MsgConfig&>(msg);
       break;
-    case Msg::kReadReq : 
+    case Msg::kReadReq :
       SCAST<MsgReadReq&>(*this) = SCAST<const MsgReadReq&>(msg);
       break;
     case Msg::kNewReq :
       SCAST<MsgNewReq&>(*this) = SCAST<const MsgNewReq&>(msg);
       break;
-    case Msg::kSession : 
+    case Msg::kSession :
       SCAST<MsgSession&>(*this) = SCAST<const MsgSession&>(msg);
       break;
-    case Msg::kDestruct : 
+    case Msg::kDestruct :
       SCAST<MsgDestruct&>(*this) = SCAST<const MsgDestruct&>(msg);
       break;
     default :

@@ -105,7 +105,7 @@ int EventsDriver<Context, LockPolicy>::Wait(time_t timeo_ms) {
 
 template <typename Context, typename LockPolicy>
 bool EventsDriver<Context, LockPolicy>::RegEvent(int fd, Op op, Event direction, Context* context, int timeo_ms) {
-  XFC_RAII_INIT(-1)
+  XFC_RAII_INIT(false)
 
   XFC_BUG(NULL==context)
 
@@ -173,6 +173,8 @@ bool EventsDriver<Context, LockPolicy>::RegEvent(int fd, Op op, Event direction,
 
 template <typename Context, typename LockPolicy>
 bool EventsDriver<Context, LockPolicy>::RegEventDel(int fd) {
+  XFC_RAII_INIT(false)
+
   if (0 != fd_to_event_ctx_[fd].sign_timeo) {
     heap_timeo_.Erase(fd_to_event_ctx_[fd].sign_timeo);
     fd_to_event_ctx_[fd].sign_timeo = 0;
