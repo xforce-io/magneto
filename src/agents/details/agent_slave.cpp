@@ -549,7 +549,7 @@ int AgentSlave::HandleReadReq_(EventCtx& event_ctx) {
     XFC_FAIL_HANDLE(true)
   } else if (ret>0) {
     ret = CheckEventCtxTimeout_(event_ctx);
-    XFC_FAIL_HANDLE(true!=ret)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, ret=-1)
 
     ret = events_driver_.RegEvent(
         event_ctx.fd, 
@@ -557,7 +557,7 @@ int AgentSlave::HandleReadReq_(EventCtx& event_ctx) {
         Driver::kIn, 
         &event_ctx, 
         event_ctx.timeleft_ms);
-    XFC_FAIL_HANDLE(true!=ret)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, ret=-1)
     return 1;
   } else {
     XFC_FAIL_HANDLE(true)
