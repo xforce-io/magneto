@@ -3,8 +3,6 @@ magneto
 
 ***A c++ network framework***
 
-***Best or Nothing，如果使用别的库可以用更简洁的代码写网络逻辑，请告诉我***
-
 *Features*
 * Coroutine based design, which lets you to write asyc network logics in a sync fashion  
 * Parallel downstream visit Apis and health check mechanism are supported
