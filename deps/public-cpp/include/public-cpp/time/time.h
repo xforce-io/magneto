@@ -52,6 +52,7 @@ void Time::UpdateTimer() {
 
 Timer::Timer() {
   start_ = Time::GetCurrentUsec(true);
+  stop_ = start_;
 }
 
 void Timer::Start(bool update) { 

@@ -7,7 +7,7 @@ LOGGER_IMPL(xforce_logger, "magneto")
 using namespace xforce;
 
 static const size_t kNumClients=50;
-static const size_t kNumReqs=100000;
+static const size_t kNumReqs=10000;
 static const size_t kTimeoutMs=500;
 int num_reqs=kNumReqs;
 int num_finished_clients=kNumClients;
@@ -26,12 +26,6 @@ void ClientHandler(void* args) {
       SCAST<const magneto::ProtocolReadRapid&>(*protocol_read);
     if (magneto::ErrorNo::kOk == ret && kInput*2 == *(protocol_read_rapid.Data())) {
       __sync_fetch_and_add(&succ, 1);
-    } else {
-        if (magneto::ErrorNo::kOk != ret) {
-            printf("error ret[%d]\n", ret);
-        } else {
-            printf("data[%d]\n", *(protocol_read_rapid.Data()));
-        }
     }
     client.FreeTalks();
   }
@@ -39,7 +33,8 @@ void ClientHandler(void* args) {
   if (0 == __sync_sub_and_fetch(&num_finished_clients, 1)) {
     end=true;
     timer.Stop(true);
-    printf("succ[%d] cost[%lu] qps[%f]\n", succ, timer.TimeUs(), kNumReqs*1000000.0/timer.TimeUs());
+    printf("all[%lu] succ[%d] cost[%lu] qps[%f]\n", 
+            kNumReqs, succ, timer.TimeUs(), kNumReqs*1000000.0/timer.TimeUs());
   }
 }
 

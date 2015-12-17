@@ -8,6 +8,7 @@ using namespace xforce;
 
 static const size_t kNumClients=50;
 static const size_t kNumReqs=500000;
+static const size_t kTimeoutMs=500;
 static const int8_t kInput=10;
 int num_reqs=kNumReqs;
 int num_finished_clients=kNumClients;
@@ -18,15 +19,22 @@ void ClientHandler(void* args) {
   Timer timer;
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
   while ( __sync_sub_and_fetch(&num_reqs, 1) >= 0 ) {
-    client.Write("agent", magneto::Buf(Slice(RCAST<const char*>(&kInput), 1), NULL), 100);
+    client.Write("agent", magneto::Buf(Slice(RCAST<const char*>(&kInput), 1), NULL), kTimeoutMs);
     client.FreeTalks();
   }
 
   if (0 == __sync_sub_and_fetch(&num_finished_clients, 1)) {
-    timer.Stop(true);
-    sleep(5);
-    printf("succ[%d] cost[%lu] qps[%f]\n", succ, timer.TimeUs(), kNumReqs*1000000.0/timer.TimeUs());
     end=true;
+    while (true) {
+        int prev_succ=succ;
+        sleep(1);
+        if (succ==prev_succ) {
+            break;
+        }
+    }
+    timer.Stop(true);
+    printf("all[%lu] succ[%d] cost[%lu] qps[%f]\n", 
+            kNumReqs, succ, timer.TimeUs(), kNumReqs*1000000.0/timer.TimeUs());
   }
 }
 
@@ -40,9 +48,9 @@ void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
     bufs.push_back(&buf);
     bufs.push_back(&buf);
     magneto::Errors errors;
-    agent.Write("consumers", bufs, 100, errors);
+    agent.Write("consumers", bufs, kTimeoutMs, errors);
   } else if (magneto::Protocol::kPing == protocol_read.GetCategory()) {
-    agent.WriteBack(magneto::Buf(Slice("p", 1), NULL), 100);
+    agent.WriteBack(magneto::Buf(Slice("p", 1), NULL), kTimeoutMs);
   }
 }
 
@@ -50,6 +58,8 @@ void ConsumerService(const magneto::ProtocolRead& protocol_read, void* /*args*/)
   const magneto::ProtocolReadRapid& protocol_read_rapid = SCAST<const magneto::ProtocolReadRapid&>(protocol_read);
   if ( kInput == *(protocol_read_rapid.Data()) ) {
     __sync_add_and_fetch(&succ, 1);
+  } else {
+      printf("what");
   }
 }
 
