@@ -3,7 +3,7 @@
 #include "../public.h"
 #include "../protocols/protocol.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ConfHelper {
  public: 
@@ -13,4 +13,4 @@ class ConfHelper {
       Protocol::Category& category);
 };
 
-}
+}}

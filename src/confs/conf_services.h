@@ -3,7 +3,7 @@
 #include "../model.h"
 #include "conf_normal.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ConfServices {
  public:
@@ -42,7 +42,7 @@ class ConfServices {
  
  private:
   const ConfNormal* conf_normal_;
-  JsonType* conf_services_;
+  const JsonType* conf_services_;
 
   Remotes remotes_;
   Services services_;
@@ -65,4 +65,4 @@ const std::vector<std::string>* ConfServices::GetServiceNames(const std::string 
   return set_to_services_.end() != iter ? &(iter->second) : NULL;
 }
 
-}
+}}

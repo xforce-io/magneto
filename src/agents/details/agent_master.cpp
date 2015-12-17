@@ -5,7 +5,7 @@
 #include "../../schedulers/schedulers.h"
 #include "../../agents/agents.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 AgentMaster::AgentMaster() :
   tid_agent_master_(0),
@@ -56,7 +56,7 @@ void AgentMaster::Stop() {
 
   std::vector<EventCtx*>* event_ctxs = events_driver_.ClearAll();
   for (size_t i=0; i < event_ctxs->size(); ++i) {
-    MAG_DELETE((*event_ctxs)[i])
+    XFC_DELETE((*event_ctxs)[i])
   }
 }
 
@@ -71,11 +71,11 @@ bool AgentMaster::ListenOnAddr_(const ListenAddr& listen_addr) {
     return false;
   }
 
-  MAG_NEW_DECL(event_ctx, EventCtx, EventCtx)
+  XFC_NEW_DECL(event_ctx, EventCtx, EventCtx)
   event_ctx->BuildForListen(fd, listen_addr);
   bool ret = events_driver_.RegEvent(fd, Driver::kAddEvent, Driver::kIn, event_ctx, -1);
   if (!ret) {
-    MAG_DELETE(event_ctx)
+    XFC_DELETE(event_ctx)
     FATAL("fail_to_reg_event error[" << strerror(errno) << "]");
     return false;
   }
@@ -118,10 +118,10 @@ bool AgentMaster::CheckEvents_() {
       switch (event_ctx->category) {
         case EventCtx::kListen : {
           int new_fd=0;
-          MAG_FAIL_HANDLE(Driver::kIn != event && (ret=-1))
+          XFC_FAIL_HANDLE(Driver::kIn != event && (ret=-1))
 
           new_fd = IOHelper::Accept(event_ctx->fd);
-          MAG_FAIL_HANDLE(-1==new_fd && (ret=-2))
+          XFC_FAIL_HANDLE(-1==new_fd && (ret=-2))
 
           if (!agents_->ClientsNotFull()) {
             static size_t i=0;
@@ -134,7 +134,7 @@ bool AgentMaster::CheckEvents_() {
 
           tmp_msg_read_req_.BuildForReadReq(new_fd, *(event_ctx->data.listen.listen_addr));
           ret = agents_->SendMsg(tmp_msg_read_req_.id_procedure, tmp_msg_read_req_);
-          MAG_FAIL_HANDLE(true!=ret && (ret=-3))
+          XFC_FAIL_HANDLE(true!=ret && (ret=-3))
           break;
 
           ERROR_HANDLE:
@@ -151,7 +151,7 @@ bool AgentMaster::CheckEvents_() {
           break;
         } 
         default : {
-          MAG_BUG(true)
+          XFC_BUG(true)
           break;
         }
       }
@@ -165,4 +165,4 @@ bool AgentMaster::CheckEvents_() {
   }
 }
 
-}
+}}

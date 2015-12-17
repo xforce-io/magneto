@@ -10,7 +10,7 @@ using ::apache::thrift::protocol::T_ONEWAY;
 using ::apache::thrift::protocol::T_ONEWAY;
 using ::apache::thrift::TException;
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void ProtocolWriteThrift::Reset(const Buf& buf) {
   struct_ = buf.first;
@@ -139,6 +139,6 @@ bool ProtocolReadThrift::Decode() {
   return true;
 }
 
-}
+}}
 
 #endif

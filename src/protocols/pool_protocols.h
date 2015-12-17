@@ -3,7 +3,7 @@
 #include "public.h"
 #include "protocols.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class PoolProtocols {
  public:
@@ -55,7 +55,7 @@ ProtocolWrite* PoolProtocols::GetWrite(Protocol::Category category) {
       return GetWrite<ProtocolWriteThrift>();
 #endif
     default :
-      MAG_BUG(true)
+      XFC_BUG(true)
       return NULL;
   }
 }
@@ -73,7 +73,7 @@ ProtocolRead* PoolProtocols::GetRead(Protocol::Category category) {
       return GetRead<ProtocolReadThrift>();
 #endif
     default :
-      MAG_BUG(true)
+      XFC_BUG(true)
       return NULL;
   }
 }
@@ -96,4 +96,4 @@ void PoolProtocols::FreeRead(ProtocolRead* protocol) {
   pool_protocol_read_.Free(*protocol);
 }
 
-}
+}}

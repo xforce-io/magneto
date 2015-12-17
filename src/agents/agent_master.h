@@ -4,7 +4,7 @@
 #include "../msg.h"
 #include "../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Confs;
 class Schedulers;
@@ -45,4 +45,4 @@ class AgentMaster {
   bool end_;
 };
 
-}
+}}

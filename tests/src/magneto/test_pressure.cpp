@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 #include "../../../src/magneto.h"
 
-namespace magneto {
-LOGGER_IMPL(magneto_logger, "magneto")
-}
+namespace xforce { namespace magneto {
+LOGGER_IMPL(xforce_logger, "magneto")
+}}
 
 magneto::Magneto server;
 

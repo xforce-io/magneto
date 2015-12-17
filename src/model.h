@@ -6,7 +6,7 @@
 #include "protocols/pool_protocols.h"
 #include "protocols/protocol.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class ProtocolWrite;
 class ProtocolRead;
@@ -144,4 +144,4 @@ ServiceStrategy::Type ServiceStrategy::GetServiceStrategy(const std::string& ser
   }
 }
 
-}
+}}

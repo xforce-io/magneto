@@ -12,7 +12,7 @@ using ::apache::thrift::protocol::TBinaryProtocol;
 using ::apache::thrift::transport::TTransport;
 using ::apache::thrift::transport::TMemoryBuffer;
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class TSimpleProtocol : public TBinaryProtocol {
  private:
@@ -48,6 +48,6 @@ void BufToThrift(const char* buf, size_t size, ThriftStruct& ts) {
   ts.read(&protocol);
 }
 
-}
+}}
 
 #endif

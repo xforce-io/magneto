@@ -5,7 +5,7 @@
 #include "handlers.h"
 #include "ctx_helper.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Talk;
 class Remote;
@@ -92,17 +92,18 @@ class BizProcedure {
 
   bool init_;
 };
-}
+
+}}
 
 #include "msg.h"
 #include "schedulers/scheduler.h"
 #include "agents/agents.h"
 #include "protocols/pool_protocols.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void BizProcedure::Procedure(const MsgNewReq& msg_new_req, ucontext_t* ctx) {
-  MAG_RAII_INIT()
+  XFC_RAII_INIT()
 
   id_procedure_ = msg_new_req.id_procedure;
   fd_client_ = msg_new_req.fd_client;
@@ -175,7 +176,7 @@ void BizProcedure::InvalidFdInServiceCache(const Service& service) {
 void BizProcedure::Reset_() {
   TRACE("BuildForDestruct fd[" << GetFdClient() << "]");
 
-  MAG_ASSERT(NULL!=protocol_read_)
+  XFC_ASSERT(NULL!=protocol_read_)
   tmp_msg_destruct_->BuildForDestruct(
       GetIdProcedure(),
       GetFdClient(), 
@@ -200,4 +201,4 @@ void BizProcedure::Process_(int this_high, int this_low) {
   biz_procedure->scheduler_->FreeBizProcedure(*biz_procedure);
 }
 
-}
+}}

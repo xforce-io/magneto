@@ -3,7 +3,7 @@
 #include "public.h"
 #include "../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class IOBasic;
 class Confs;
@@ -134,11 +134,11 @@ class IOBasic {
   IOBasicTPD* tmp_io_basic_;
 };
 
-}
+}}
 
 #include "../biz_procedure.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void IOBasicTPD::FreeTalks(BizProcedure& biz_procedure) {
   return biz_procedure.FreeTalks();
@@ -211,4 +211,4 @@ void IOBasic::FreeTalks(BizProcedure& biz_procedure) {
   return io_basic->FreeTalks(biz_procedure);
 }
 
-}
+}}

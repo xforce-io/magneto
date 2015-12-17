@@ -2,7 +2,7 @@
 
 #include "../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class PoolConnsPerRemote {
  private:
@@ -44,4 +44,4 @@ void PoolConnsPerRemote::ReportStatus(bool status) {
     : std::max(health_mark_>>1, size_t(1));
 }
 
-}
+}}

@@ -8,7 +8,7 @@
 #include "../../session.h"
 #include "../../schedulers/schedulers.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 AgentSlave::AgentSlave() :
   events_driver_(false),
@@ -22,10 +22,10 @@ AgentSlave::AgentSlave() :
 bool AgentSlave::Init(const Confs& confs, Schedulers& schedulers) {
   confs_ = &confs;
   schedulers_ = &schedulers;
-  MAG_NEW(conns_mgr_, ConnsMgr(confs.GetConfNormal().GetLongConnKeepaliveSec()))
+  XFC_NEW(conns_mgr_, ConnsMgr(confs.GetConfNormal().GetLongConnKeepaliveSec()))
   conns_mgr_->ConfigRemotes(confs_->GetConfServices()->GetRemotes());
-  MAG_NEW(pool_event_ctxs_, PoolObjs<EventCtx>)
-  MAG_NEW(mailbox_notifier_, MailboxNotifier(events_driver_))
+  XFC_NEW(pool_event_ctxs_, PoolObjs<EventCtx>)
+  XFC_NEW(mailbox_notifier_, MailboxNotifier(events_driver_))
   bool ret = mailbox_.Init(
       confs.GetConfNormal().GetSizeSchedulerMailbox(), 
       Msg::kMaxSizeMsg, 
@@ -36,7 +36,7 @@ bool AgentSlave::Init(const Confs& confs, Schedulers& schedulers) {
     return false;
   }
 
-  MAG_NEW(
+  XFC_NEW(
       pool_sessions_, 
       PoolObjsInit<Session>(Session(confs, events_driver_, *conns_mgr_, *pool_event_ctxs_)))
   return true;
@@ -70,10 +70,10 @@ void AgentSlave::Stop() {
 
 AgentSlave::~AgentSlave() {
   Stop();
-  MAG_DELETE(pool_sessions_)
-  MAG_DELETE(pool_event_ctxs_)
-  MAG_DELETE(mailbox_notifier_)
-  MAG_DELETE(conns_mgr_)
+  XFC_DELETE(pool_sessions_)
+  XFC_DELETE(pool_event_ctxs_)
+  XFC_DELETE(mailbox_notifier_)
+  XFC_DELETE(conns_mgr_)
 }
 
 void* AgentSlave::Run_(void* args) {
@@ -156,16 +156,16 @@ bool AgentSlave::CheckEvents_() {
                 event_ctx->data.read_req.protocol_read = NULL;
               } else {
                 WARN("fail_send_new_req_msg_to_schedulers");
-                MAG_FAIL_HANDLE(true)
+                XFC_FAIL_HANDLE(true)
               }
             } else if (ret>0) {
               break;
             } else {
-              MAG_FAIL_HANDLE(true)
+              XFC_FAIL_HANDLE(true)
             }
           } else {
             events_driver_.RegEventDel(event_ctx->fd);
-            MAG_FAIL_HANDLE(true)
+            XFC_FAIL_HANDLE(true)
             DEBUG("invalid_read_req_event fd[" << event_ctx->fd << "]");
           }
           pool_event_ctxs_->Free(event_ctx);
@@ -182,7 +182,7 @@ bool AgentSlave::CheckEvents_() {
           break;
         }
         default : {
-          MAG_BUG(true)
+          XFC_BUG(true)
           break;
         }
       }
@@ -200,7 +200,7 @@ bool AgentSlave::CleanTimeouts_() {
   const std::vector<EventCtx*>& timeouts = *(events_driver_.RemoveTimeouts());
   for (size_t i=0; i < timeouts.size(); ++i) {
     EventCtx* event_ctx = timeouts[i];
-    MAG_BUG(NULL==event_ctx)
+    XFC_BUG(NULL==event_ctx)
 
     switch (event_ctx->category) {
       case EventCtx::kSession : {
@@ -231,7 +231,7 @@ bool AgentSlave::CleanTimeouts_() {
         break;
       }
       default :
-        MAG_BUG(true)
+        XFC_BUG(true)
     }
     pool_event_ctxs_->Free(event_ctx);
   }
@@ -311,7 +311,7 @@ bool AgentSlave::CheckMailbox_() {
         break;
       }
       default:
-        MAG_BUG(true);
+        XFC_BUG(true);
         break;
     }
 
@@ -345,7 +345,7 @@ bool AgentSlave::CheckSession_(Driver::Event event, EventCtx& event_ctx) {
         break;
       }
       default : {
-        MAG_BUG(true)
+        XFC_BUG(true)
       }
     }
   } else {
@@ -379,7 +379,7 @@ bool AgentSlave::HandleSessionEventConn_(Talk& talk, EventCtx& event_ctx) {
           (Talk::kReadOnly != talk.category ? 
             talk.remote->wtimeo_ms :
             talk.remote->rtimeo_ms)));
-  MAG_FAIL_HANDLE_AND_SET(!ret, talk.error = ErrorNo::kTimeout)
+  XFC_FAIL_HANDLE_AND_SET(!ret, talk.error = ErrorNo::kTimeout)
 
   event = (Talk::kReadOnly != talk.category ? Driver::kOut: Driver::kIn);
   ret = events_driver_.RegEvent(
@@ -388,7 +388,7 @@ bool AgentSlave::HandleSessionEventConn_(Talk& talk, EventCtx& event_ctx) {
       event, 
       &event_ctx, 
       event_ctx.timeleft_ms);
-  MAG_FAIL_HANDLE_AND_SET(!ret, talk.error = ErrorNo::kOther)
+  XFC_FAIL_HANDLE_AND_SET(!ret, talk.error = ErrorNo::kOther)
   return true;
 
   ERROR_HANDLE:
@@ -405,12 +405,12 @@ bool AgentSlave::HandleSessionEventRead_(Talk& talk, EventCtx& event_ctx) {
   int ret = protocol_read.Read(talk.fd);
   if (0==ret) { 
     ret = protocol_read.Decode();
-    MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kDecode)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kDecode)
 
-    MAG_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kOk)
+    XFC_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kOk)
   } else if (ret>0) {
     ret = CheckEventCtxTimeout_(event_ctx);
-    MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kTimeout)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kTimeout)
 
     ret = events_driver_.RegEvent(
         talk.fd, 
@@ -418,9 +418,9 @@ bool AgentSlave::HandleSessionEventRead_(Talk& talk, EventCtx& event_ctx) {
         Driver::kIn, 
         &event_ctx, 
         event_ctx.timeleft_ms);
-    MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kOther)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kOther)
   } else {
-    MAG_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kBroken)
+    XFC_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kBroken)
   }
   return true;
 
@@ -443,9 +443,9 @@ bool AgentSlave::HandleSessionEventWrite_(Talk& talk, EventCtx& event_ctx) {
           std::min(
               talk.endtime_ms - cur_time_ms,
               talk.remote->rtimeo_ms));
-      MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kTimeout)
+      XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kTimeout)
 
-      MAG_BUG(talk.endtime_ms <= cur_time_ms)
+      XFC_BUG(talk.endtime_ms <= cur_time_ms)
 
       talk.status = Talk::kRead;
       ret = events_driver_.RegEvent(
@@ -454,15 +454,15 @@ bool AgentSlave::HandleSessionEventWrite_(Talk& talk, EventCtx& event_ctx) {
           Driver::kIn, 
           &event_ctx, 
           event_ctx.timeleft_ms);
-      MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kOther)
+      XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kOther)
     } else {
-      MAG_BUG(Talk::kWriteOnly != talk.category)
+      XFC_BUG(Talk::kWriteOnly != talk.category)
 
-      MAG_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kOk)
+      XFC_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kOk)
     }
   } else if (ret>0) {
     ret = CheckEventCtxTimeout_(event_ctx);
-    MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kTimeout)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kTimeout)
 
     ret = events_driver_.RegEvent(
         talk.fd, 
@@ -470,9 +470,9 @@ bool AgentSlave::HandleSessionEventWrite_(Talk& talk, EventCtx& event_ctx) {
         Driver::kOut, 
         &event_ctx, 
         event_ctx.timeleft_ms);
-    MAG_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kOther)
+    XFC_FAIL_HANDLE_AND_SET(true!=ret, talk.error = ErrorNo::kOther)
   } else {
-    MAG_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kBroken)
+    XFC_FAIL_HANDLE_AND_SET(true, talk.error = ErrorNo::kBroken)
   }
   return true;
 
@@ -498,7 +498,7 @@ void AgentSlave::HandleMsgDestruct_(MsgDestruct& msg_destruct) {
           *((*msg_destruct.big_cache)[i].second),
           (*msg_destruct.big_cache)[i].first);
     }
-    MAG_DELETE(msg_destruct.big_cache)
+    XFC_DELETE(msg_destruct.big_cache)
   }
 
   if (msg_destruct.fd_client <= 0) {
@@ -546,10 +546,10 @@ int AgentSlave::HandleReadReq_(EventCtx& event_ctx) {
   int ret = protocol_read.Read(event_ctx.fd);
   if (0==ret) {
     ret = (protocol_read.Decode() ? 0 : -1); 
-    MAG_FAIL_HANDLE(true)
+    XFC_FAIL_HANDLE(true)
   } else if (ret>0) {
     ret = CheckEventCtxTimeout_(event_ctx);
-    MAG_FAIL_HANDLE(true!=ret)
+    XFC_FAIL_HANDLE(true!=ret)
 
     ret = events_driver_.RegEvent(
         event_ctx.fd, 
@@ -557,10 +557,10 @@ int AgentSlave::HandleReadReq_(EventCtx& event_ctx) {
         Driver::kIn, 
         &event_ctx, 
         event_ctx.timeleft_ms);
-    MAG_FAIL_HANDLE(true!=ret)
+    XFC_FAIL_HANDLE(true!=ret)
     return 1;
   } else {
-    MAG_FAIL_HANDLE(true)
+    XFC_FAIL_HANDLE(true)
   }
 
   ERROR_HANDLE:
@@ -571,4 +571,4 @@ int AgentSlave::HandleReadReq_(EventCtx& event_ctx) {
   return ret;
 }
 
-}
+}}

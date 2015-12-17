@@ -1,7 +1,7 @@
 #include "../protocol_ping.h"
 #include "../../public.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 int ProtocolWritePing::Write(int fd) {
   int ret = IOHelper::WriteNonBlock(fd, "p", 1);
@@ -21,4 +21,4 @@ int ProtocolReadPing::Read(int fd) {
   }
 }
 
-}
+}}

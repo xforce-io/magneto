@@ -1,11 +1,14 @@
 #include "magneto.h"
 
-namespace magneto {
-LOGGER_IMPL(magneto_logger, "magneto")
+namespace xforce {
+LOGGER_IMPL(xforce_logger, "magneto")
 }
 
+using namespace xforce;
+
 static const size_t kNumClients=50;
-static const size_t kNumReqs=1000000;
+static const size_t kNumReqs=100000;
+static const size_t kTimeoutMs=500;
 int num_reqs=kNumReqs;
 int num_finished_clients=kNumClients;
 int succ=0;
@@ -16,13 +19,19 @@ void ClientHandler(void* args) {
 
   int8_t kInput=5;
   magneto::ProtocolRead* protocol_read;
-  magneto::Timer timer;
+  Timer timer;
   while ( __sync_sub_and_fetch(&num_reqs, 1) >= 0 ) {
-    int ret = client.SimpleTalk("agent", magneto::Buf(magneto::Slice(RCAST<const char*>(&kInput), 1), NULL), 100, protocol_read);
+    int ret = client.SimpleTalk("agent", magneto::Buf(Slice(RCAST<const char*>(&kInput), 1), NULL), kTimeoutMs, protocol_read);
     const magneto::ProtocolReadRapid& protocol_read_rapid = 
       SCAST<const magneto::ProtocolReadRapid&>(*protocol_read);
     if (magneto::ErrorNo::kOk == ret && kInput*2 == *(protocol_read_rapid.Data())) {
       __sync_fetch_and_add(&succ, 1);
+    } else {
+        if (magneto::ErrorNo::kOk != ret) {
+            printf("error ret[%d]\n", ret);
+        } else {
+            printf("data[%d]\n", *(protocol_read_rapid.Data()));
+        }
     }
     client.FreeTalks();
   }
@@ -39,13 +48,13 @@ void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
   if (magneto::Protocol::kRapid == protocol_read.GetCategory()) {
     const magneto::ProtocolReadRapid& protocol_read_rapid = SCAST<const magneto::ProtocolReadRapid&>(protocol_read);
 
-    magneto::Buf buf(magneto::Slice(protocol_read_rapid.Data(), 1), NULL);
+    magneto::Buf buf(Slice(protocol_read_rapid.Data(), 1), NULL);
     magneto::Bufs bufs;
     bufs.push_back(&buf);
     bufs.push_back(&buf);
     magneto::Responses responses;
     int8_t resp=0;
-    int ret = agent.Talks("plus_minus", bufs, 100, responses);
+    int ret = agent.Talks("plus_minus", bufs, kTimeoutMs, responses);
     if (0==ret) {
       for (size_t i=0; i < responses.size(); ++i) {
         resp += ( 0 == responses[i].first ? *(responses[i].second->Data()) : 0);
@@ -54,10 +63,10 @@ void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
       resp=0;
     }
 
-    buf = magneto::Buf(magneto::Slice(RCAST<const char*>(&resp), 1), NULL);
-    agent.WriteBack(buf, 100);
+    buf = magneto::Buf(Slice(RCAST<const char*>(&resp), 1), NULL);
+    agent.WriteBack(buf, kTimeoutMs);
   } else if (magneto::Protocol::kPing == protocol_read.GetCategory()) {
-    agent.WriteBack(magneto::Buf(magneto::Slice("p", 1), NULL), 100);
+    agent.WriteBack(magneto::Buf(Slice("p", 1), NULL), kTimeoutMs);
   }
 }
 
@@ -69,8 +78,8 @@ inline void CalcService(const magneto::ProtocolRead& protocol_read, void* args) 
   } else {
     resp = *(protocol_read_rapid.Data()) - 1;
   }
-  magneto::Buf buf(magneto::Slice(&resp, 1), NULL);
-  RCAST<magneto::Magneto*>(args)->WriteBack(buf, 100);
+  magneto::Buf buf(Slice(&resp, 1), NULL);
+  RCAST<magneto::Magneto*>(args)->WriteBack(buf, kTimeoutMs);
 }
 
 int main() {
@@ -88,23 +97,30 @@ int main() {
   magneto::RoutineItems client_handle;
 
   int ret = agent->Init("conf/agent/", &AgentService, NULL, agent, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_agent")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_agent")
 
   ret = plus_master->Init("conf/plus_master/", &CalcService, NULL, plus_master, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_plus_master")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_plus_master")
 
   ret = plus_slave->Init("conf/plus_slave/", &CalcService, NULL, plus_slave, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_plus_slave")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_plus_slave")
 
   ret = minus_master->Init("conf/minus_master/", &CalcService, NULL, minus_master, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_minus_master")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_minus_master")
 
   ret = minus_slave->Init("conf/minus_slave/", &CalcService, NULL, minus_slave, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_minus_slave")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_minus_slave")
 
   client_handle.push_back(std::make_pair(ClientHandler, kNumClients));
   ret = client->Init("conf/client/", NULL, &client_handle, client, end);
-  MAG_FAIL_HANDLE_FATAL_LOG(magneto::magneto_logger, !ret, "fail_init_client")
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
+
+  ret = agent->Start() && plus_master->Start() && plus_slave->Start() && 
+        minus_master->Start() && minus_slave->Start();
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
+
+  ret = client->Start();
+  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_client")
 
   client->Stop();
   delete [] servers;

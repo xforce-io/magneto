@@ -2,7 +2,7 @@
 
 #include "public.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class CtxHelper {
  private:
@@ -29,4 +29,4 @@ RetType* CtxHelper::IntsToPtr(int hign, int low) {
   return RCAST<RetType*>( (hign_ptr<<32) | low_ptr );
 }
 
-}
+}}

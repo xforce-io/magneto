@@ -1,7 +1,7 @@
 #include "../schedulers.h"
 #include "../../confs/confs.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 bool Schedulers::Init(
     const Confs& confs,
@@ -11,10 +11,10 @@ bool Schedulers::Init(
     void* args) {
   if (NULL!=req_handler) {
     for (size_t i=0; i < confs.GetConfNormal().GetNumSchedulers(); ++i) {
-      MAG_NEW_DECL(scheduler, Scheduler, Scheduler)
+      XFC_NEW_DECL(scheduler, Scheduler, Scheduler)
       bool ret = scheduler->Init(confs, agents, req_handler, NULL, args);
       if (!ret) {
-        MAG_DELETE(scheduler)
+        XFC_DELETE(scheduler)
         return false;
       }
       schedulers_req_.push_back(scheduler);
@@ -23,10 +23,10 @@ bool Schedulers::Init(
 
   if (NULL!=routine_items) {
     for (size_t i=0; i < routine_items->size(); ++i) {
-      MAG_NEW_DECL(scheduler, Scheduler, Scheduler)
+      XFC_NEW_DECL(scheduler, Scheduler, Scheduler)
       bool ret = scheduler->Init(confs, agents, NULL, &((*routine_items)[i]), args);
       if (!ret) {
-        MAG_DELETE(scheduler)
+        XFC_DELETE(scheduler)
         return false;
       }
       schedulers_routine_.push_back(scheduler);
@@ -63,12 +63,12 @@ void Schedulers::Stop() {
 Schedulers::~Schedulers() {
   Stop();
   for (size_t i=0; i < schedulers_req_.size(); ++i) {
-    MAG_DELETE(schedulers_req_[i])
+    XFC_DELETE(schedulers_req_[i])
   }
 
   for (size_t i=0; i < schedulers_routine_.size(); ++i) {
-    MAG_DELETE(schedulers_routine_[i])
+    XFC_DELETE(schedulers_routine_[i])
   }
 }
 
-}
+}}

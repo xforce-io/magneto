@@ -3,7 +3,7 @@
 #include "scheduler.h"
 #include "../msg.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Confs;
 class Agents;
@@ -33,4 +33,4 @@ bool Schedulers::SendToOneWorker(Msg& msg) {
   return schedulers_req_[msg_new_req.id_procedure % schedulers_req_.size()]->SendMsg(msg);
 }
 
-}
+}}

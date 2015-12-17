@@ -3,7 +3,7 @@
 #include "public.h"
 #include "../model.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 class Confs;
 class Schedulers;
@@ -35,12 +35,12 @@ class Agents {
   std::vector<AgentSlave*> agent_slaves_; 
 };
 
-}
+}}
 
 #include "agent_slave.h"
 #include "../confs/confs.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 void Agents::BroadcastWithRetry(Msg& msg) {
   for (size_t i=0; i < agent_slaves_.size(); ++i) {
@@ -74,4 +74,4 @@ void Agents::SendMsgWithRetry(int id, Msg& msg) {
   }
 }
 
-}
+}}

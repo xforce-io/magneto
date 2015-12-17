@@ -3,7 +3,7 @@
 #include "../event_ctx.h"
 #include "../confs/confs.h"
 
-namespace magneto {
+namespace xforce { namespace magneto {
 
 Session::Session(
     const Confs& confs,
@@ -54,7 +54,7 @@ void Session::ResetTalk_(Talk& talk, bool is_retry) {
       return;
     }
   } else if (talk.fd < 0) {
-    MAG_BUG(true)
+    XFC_BUG(true)
     has_failure_=true;
     return;
   }
@@ -115,4 +115,4 @@ void Session::ResetTalk_(Talk& talk, bool is_retry) {
   }
 }
 
-}
+}}
