@@ -16,43 +16,4 @@ int ProtocolWriteRapid::Write(int fd) {
   }
 }
 
-int ProtocolReadRapid::Read(int fd) {
-  bool has_bytes_read=false;
-  for (;;) {
-    size_t bytes_left;
-    if (read_header_) {
-      bytes_left = sizeof(RapidHeader) - buffer_.Len();
-      int ret = IOHelper::ReadNonBlock(fd, buffer_.Stop(), bytes_left);
-      if (ret>0) {
-        has_bytes_read=true;
-        buffer_.SetLen(buffer_.Len() + ret);
-        if ( sizeof(RapidHeader) == buffer_.Len() ) {
-          read_header_=false;
-
-          RapidHeader* header = CCAST<RapidHeader*>(Header());
-          header->size = ntohl(header->size);
-          buffer_.Reserve(sizeof(RapidHeader) + header->size);
-          continue;
-        }
-      } else if (0==ret) {
-        return has_bytes_read ? bytes_left : kEnd;
-      } else {
-        return ret;
-      }
-    } else {
-      bytes_left = sizeof(RapidHeader) + CCAST<RapidHeader*>(Header())->size - buffer_.Len();
-      int ret = IOHelper::ReadNonBlock(fd, buffer_.Stop(), bytes_left);
-      if (ret>0) {
-        has_bytes_read=true;
-        buffer_.SetLen(buffer_.Len() + ret);
-        return bytes_left-ret;
-      } else if (0==ret) {
-        return has_bytes_read ? bytes_left : kEnd;
-      } else {
-        return ret;
-      }
-    }
-  }
-}
-
 }}

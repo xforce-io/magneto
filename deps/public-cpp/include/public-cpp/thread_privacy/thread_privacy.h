@@ -101,7 +101,7 @@ template <typename Privacy>
 Privacy* ThreadPrivacy::Get(size_t no, bool* first_create) { 
   XFC_RAII_INIT(NULL)
 
-  void* result;
+  void* result=NULL;
   Privacies* privacies;
   Privacy* privacy=NULL;
   int ret;

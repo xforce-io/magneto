@@ -23,6 +23,8 @@ bool AgentMaster::Init(const Confs& confs, Schedulers& schedulers, Agents& agent
         << inet_ntoa(iter->addr.addr.sin_addr)
         << "|" 
         << ntohs(iter->addr.addr.sin_port)
+        << "|"
+        << iter->category
         << "]");
       
     bool ret = ListenOnAddr_(*iter);

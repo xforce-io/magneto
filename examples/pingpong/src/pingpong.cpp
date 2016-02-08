@@ -7,7 +7,7 @@ LOGGER_IMPL(xforce_logger, "magneto")
 using namespace xforce;
 
 static const size_t kNumClients=50;
-static const size_t kNumReqs=10000;
+static const size_t kNumReqs=100000;
 static const size_t kTimeoutMs=500;
 int num_reqs=kNumReqs;
 int num_finished_clients=kNumClients;

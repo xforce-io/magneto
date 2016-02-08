@@ -37,6 +37,10 @@ Protocol::Category PoolProtocols::GetCategory(const std::string& category) {
   } else if ("thrift" == category) {
     return Protocol::kThrift;
 #endif
+#ifdef MAGNETO_PROTOBUF_SUPPORT
+  } else if ("protobuf" == category) {
+    return Protocol::kProtobuf;
+#endif
   } else {
     return Protocol::kInvalid;
   }
@@ -53,6 +57,10 @@ ProtocolWrite* PoolProtocols::GetWrite(Protocol::Category category) {
 #ifdef MAGNETO_THRIFT_SUPPORT
     case Protocol::kThrift :
       return GetWrite<ProtocolWriteThrift>();
+#endif
+#ifdef MAGNETO_PROTOBUF_SUPPORT
+    case Protocol::kProtobuf:
+      return GetWrite<ProtocolWriteProtobuf>();
 #endif
     default :
       XFC_BUG(true)
@@ -71,6 +79,10 @@ ProtocolRead* PoolProtocols::GetRead(Protocol::Category category) {
 #ifdef MAGNETO_THRIFT_SUPPORT
     case Protocol::kThrift :
       return GetRead<ProtocolReadThrift>();
+#endif
+#ifdef MAGNETO_PROTOBUF_SUPPORT
+    case Protocol::kProtobuf:
+      return GetRead<ProtocolReadProtobuf>();
 #endif
     default :
       XFC_BUG(true)

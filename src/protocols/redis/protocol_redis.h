@@ -18,7 +18,7 @@ class ProtocolWriteRedis : public ProtocolWrite {
   virtual ~ProtocolWriteRedis() {}
 
  private:
-  std::string in_;
+  std::string query_;
   std::string out_;
   size_t out_pos_;
 };
@@ -39,27 +39,27 @@ class ProtocolReadRedis : public ProtocolRead {
   int Read(int fd);
   bool Decode() { return true; }
 
-  const char* Data() const { return out_.c_str(); }
-  size_t Size() const { return out_.length(); }
+  const char* Data() const { return reply_.c_str(); }
+  size_t Size() const { return reply_.length(); }
 
   virtual ~ProtocolReadRedis();
 
  private:
+  std::string in_;
   std::string reply_;
-  std::string out_;
   char* tmpbuf_;
 };
 
 void ProtocolWriteRedis::Reset(const Buf& buf) {
-  in_.assign(buf.first.Data());
+  query_.assign(buf.first.Data());
   out_pos_=0;
 }
 
 void ProtocolReadRedis::Reset(const ListenAddr* listen_addr) {
   Super::Reset(listen_addr);
 
+  in_.clear();
   reply_.clear();
-  out_.clear();
 }
 
 }}

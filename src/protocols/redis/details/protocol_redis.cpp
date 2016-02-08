@@ -4,7 +4,7 @@
 namespace xforce { namespace magneto {
 
 bool ProtocolWriteRedis::Encode() {
-  return RedisParser::ParseCmd(in_, &out_);
+  return RedisParser::ParseCmd(query_, &out_);
 }
 
 int ProtocolWriteRedis::Write(int fd) {
@@ -28,7 +28,7 @@ int ProtocolReadRedis::Read(int fd) {
     if (ret>=0) {
       tmppos_+=ret;
       tmpbuf_[tmppos_] = '\0';
-      reply_.append(tmpbuf_);
+      in_.append(tmpbuf_);
       if (ret<kTmpBufSize) {
         break;
       }
@@ -39,7 +39,7 @@ int ProtocolReadRedis::Read(int fd) {
 
   bool is_pong;
   size_t size_reply;
-  return RedisParser::ParseReply(reply_, &is_pong, &size_reply, &out_); 
+  return RedisParser::ParseReply(in_, &is_pong, &size_reply, &reply_); 
 }
 
 ProtocolReadRedis::~ProtocolReadRedis() {

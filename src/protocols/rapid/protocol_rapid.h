@@ -36,9 +36,9 @@ class ProtocolWriteRapid : public ProtocolWrite {
   size_t tmp_num_iovs_;
 };
 
-class ProtocolReadRapid : public ProtocolRead {
+class ProtocolReadRapid : public ProtocolReadWithFixSize<RapidHeader> {
  private:
-  typedef ProtocolRead Super;
+  typedef ProtocolReadWithFixSize<RapidHeader> Super;
   
  public:
   static const Protocol::Category kCategory = Protocol::kRapid;
@@ -47,18 +47,11 @@ class ProtocolReadRapid : public ProtocolRead {
   Protocol::Category GetCategory() const { return kCategory; }
 
   inline void Reset(const ListenAddr* listen_addr);
-  int Read(int fd);
   inline bool Decode();
 
-  inline const RapidHeader* Header() const;
-  inline const char* Data() const;
-  size_t Size() const { return Header()->size; }
+  size_t SizeBody() const { return ntohl(Header().size); }
 
   virtual ~ProtocolReadRapid() {}
-
- private:
-  Buffer buffer_;
-  bool read_header_;
 };
 
 void ProtocolWriteRapid::Reset(const Buf& buf) {
@@ -87,29 +80,20 @@ void ProtocolReadRapid::Reset(const ListenAddr* listen_addr) {
 }
 
 bool ProtocolReadRapid::Decode() { 
-  RapidHeader* header = CCAST<RapidHeader*>(Header());
-  header->magic = ntohs(header->magic);
-  header->version = ntohs(header->version);
-
-  if ( RapidHeader::kMagic == header->magic 
-      && header->version <= RapidHeader::kMaxVersion ) {
+  RapidHeader& header = CCAST<RapidHeader&>(Header());
+  header.magic = ntohs(header.magic);
+  header.version = ntohs(header.version);
+  if ( RapidHeader::kMagic == header.magic 
+      && header.version <= RapidHeader::kMaxVersion ) {
     return true;
   } else {
     WARN("fail_decode_rapid_req magic["
-        << SCAST<uint32_t>(header->magic) 
+        << SCAST<uint32_t>(header.magic) 
         << "] version[" 
-        << SCAST<uint32_t>(header->version) 
+        << SCAST<uint32_t>(header.version) 
         << "]");
     return false;
   }
-}
-
-const RapidHeader* ProtocolReadRapid::Header() const { 
-  return RCAST<const RapidHeader*>(buffer_.Start()); 
-}
-
-const char* ProtocolReadRapid::Data() const { 
-  return buffer_.Start() + sizeof(RapidHeader); 
 }
 
 }}

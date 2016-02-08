@@ -1,12 +1,14 @@
 cmake_minimum_required(VERSION 2.6.4)
 
 include_directories(
+  /usr/include/
   /usr/local/include/
   ../src/
   )
 
 link_directories(
   /usr/local/lib/
+  /usr/local/lib64/
   magneto/lib/magneto/
 )
 
@@ -77,21 +79,41 @@ add_custom_command(TARGET broadcast/bin/broadcast
 #############################
 ##     thrift protocol 
 ############################
-#set(THRIFT_PROTOCOL_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thrift_protocol/")
-#
-#add_executable(thrift_protocol/bin/thrift_protocol
-#  thrift_protocol/src/thrift_protocol.cpp
-#  thrift_protocol/src/gen-cpp/PingPongTest.cpp
-#  thrift_protocol/src/gen-cpp/sample_proto_constants.cpp
-#  thrift_protocol/src/gen-cpp/sample_proto_types.cpp)
-#
-#add_custom_command(TARGET thrift_protocol/bin/thrift_protocol
-#  PRE_BUILD
-#
-#  #make examples
-#  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/
-#  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/conf
-#  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/bin
-#  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/log
-#  COMMAND cp -rf ${THRIFT_PROTOCOL_PRJ_PATH}/conf/* ${EXP_OUTPUT_PATH}/thrift_protocol/conf
-#)
+set(THRIFT_PROTOCOL_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/thrift_protocol/")
+
+add_executable(thrift_protocol/bin/thrift_protocol
+  thrift_protocol/src/thrift_protocol.cpp
+  thrift_protocol/src/gen-cpp/PingPongTest.cpp
+  thrift_protocol/src/gen-cpp/sample_proto_constants.cpp
+  thrift_protocol/src/gen-cpp/sample_proto_types.cpp)
+
+add_custom_command(TARGET thrift_protocol/bin/thrift_protocol
+  PRE_BUILD
+
+  #make examples
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/conf
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/bin
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/thrift_protocol/log
+  COMMAND cp -rf ${THRIFT_PROTOCOL_PRJ_PATH}/conf/* ${EXP_OUTPUT_PATH}/thrift_protocol/conf
+)
+
+#############################
+##     pb protocol 
+############################
+set(PB_PROTOCOL_PRJ_PATH "${CMAKE_CURRENT_SOURCE_DIR}/pb_protocol/")
+
+add_executable(pb_protocol/bin/pb_protocol
+  pb_protocol/src/pb_protocol.cpp
+  pb_protocol/src/sample.pb.cc)
+
+add_custom_command(TARGET pb_protocol/bin/pb_protocol
+  PRE_BUILD
+
+  #make examples
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/pb_protocol/
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/pb_protocol/conf
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/pb_protocol/bin
+  COMMAND ${CMAKE_COMMAND} -E make_directory ${EXP_OUTPUT_PATH}/pb_protocol/log
+  COMMAND cp -rf ${PB_PROTOCOL_PRJ_PATH}/conf/* ${EXP_OUTPUT_PATH}/pb_protocol/conf
+)

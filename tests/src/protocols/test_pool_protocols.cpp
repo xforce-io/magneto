@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "../../../src/protocols/pool_protocols.h"
 
-using namespace magneto;
+using namespace xforce::magneto;
 
 namespace xforce { namespace magneto {
 LOGGER_IMPL(xforce_logger, "magneto")

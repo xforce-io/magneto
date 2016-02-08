@@ -1,0 +1,7 @@
+package Test;
+
+message Msg {
+	required uint32 userId = 1;
+	required string name = 3;
+	repeated uint32 creatTime = 5;
+}

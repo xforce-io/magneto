@@ -5,6 +5,7 @@ project(magneto)
 include_directories(
   /usr/include/
   ${CMAKE_SOURCE_DIR}/deps/public-cpp/include/
+  /usr/local/include
 )
 
 link_directories(
@@ -21,8 +22,9 @@ set(MAG_SRC_DIR_PUBLIC_CPP "${CMAKE_SOURCE_DIR}/deps/public-cpp/include/public-c
 
 FILE(GLOB_RECURSE MAG_FILES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -O2")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -O2")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -DMAGNETO_THRIFT_SUPPORT -O2")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -W -Wall -Wno-deprecated -Wno-invalid-offsetof -Wno-strict-aliasing -DMAGNETO_THRIFT_SUPPORT -DMAGNETO_PROTOBUF_SUPPORT")
 set(LIB_DEPS ${CMAKE_SOURCE_DIR}/deps/public-cpp/lib/public-cpp/libpublic-cpp.a)
 
 add_library(magneto
@@ -34,7 +36,8 @@ target_link_libraries(magneto
   pthread
   rt
   z
-  #thrift
+  protobuf
+  thrift
   #tcmalloc
   #monitor
   )

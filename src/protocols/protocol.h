@@ -23,6 +23,9 @@ struct Protocol {
 #ifdef MAGNETO_THRIFT_SUPPORT
     kThrift,
 #endif
+#ifdef MAGNETO_PROTOBUF_SUPPORT
+    kProtobuf,
+#endif
     kHttp,
     kInvalid,
   };
@@ -45,7 +48,7 @@ struct ReqInfo {
 class ProtocolWrite {
  public:
   static const Protocol::Category kCategory = Protocol::kInvalid;
-  static const int kEnd = -100;
+  static const int kEnd = -10000;
   
  public:
   virtual Protocol::Category GetCategory() const { return kCategory; }
@@ -68,11 +71,10 @@ class ProtocolWrite {
 class ProtocolRead {
  public:
   static const Protocol::Category kCategory = Protocol::kInvalid;
-  static const int kEnd = -100;
+  static const int kEnd = -10001;
   
  public:
   virtual Protocol::Category GetCategory() const { return kCategory; }
-
   virtual void Reset(const ListenAddr* listen_addr=NULL);
   virtual bool Decode() { return false; }
 
@@ -83,7 +85,7 @@ class ProtocolRead {
    *     <    0 : error happen
    *    == kEnd : 0 bytes are read
    */
-  virtual int Read(int /*fd*/) { return kEnd; }
+  virtual int Read(int /*fd*/) { DEBUG("here??"); return kEnd; }
 
   const ReqInfo& GetReqInfo() const { return req_info_; }
   const std::string& GetServiceName() const { return req_info_.listen_addr->name; }
@@ -95,6 +97,75 @@ class ProtocolRead {
  public:
   ReqInfo req_info_;
 };
+
+template <typename TypeHeader>
+class ProtocolReadWithFixSize : public ProtocolRead {
+ private:
+  typedef ProtocolRead Super;
+  
+ public:
+  virtual void Reset(const ListenAddr* listen_addr);
+  virtual int Read(int fd);
+  virtual const char* Data() const { return Body(); }
+  virtual size_t Size() const { return SizeBody(); }
+
+ protected: 
+  size_t SizeHeader() const { return sizeof(TypeHeader); }
+  virtual size_t SizeBody() const = 0;
+  const TypeHeader& Header() const { return *RCAST<const TypeHeader*>(buffer_.Start()); }
+  const char* Body() const { return RCAST<const char*>(buffer_.Start() + SizeHeader()); }
+  char* Body() { return RCAST<char*>(buffer_.Start() + SizeHeader()); }
+
+ protected:
+  Buffer buffer_;
+  bool read_header_;
+};
+
+template <typename TypeHeader>
+void ProtocolReadWithFixSize<TypeHeader>::Reset(const ListenAddr* listen_addr) {
+  Super::Reset(listen_addr);
+
+  buffer_.Clear();
+  buffer_.Reserve(SizeHeader());
+  read_header_=true;
+}
+
+template <typename TypeHeader>
+int ProtocolReadWithFixSize<TypeHeader>::Read(int fd) {
+  bool has_bytes_read=false;
+  for (;;) {
+    size_t bytes_left;
+    if (read_header_) {
+      bytes_left = SizeHeader() - buffer_.Len();
+      int ret = IOHelper::ReadNonBlock(fd, buffer_.Stop(), bytes_left);
+      if (ret>0) {
+        has_bytes_read=true;
+        buffer_.SetLen(buffer_.Len() + ret);
+        if ( SizeHeader() == buffer_.Len() ) {
+          read_header_=false;
+          buffer_.Reserve(SizeHeader() + SizeBody());
+          continue;
+        }
+      } else if (0==ret) {
+        return has_bytes_read ? bytes_left : kEnd;
+      } else {
+        return ret;
+      }
+    } else {
+      bytes_left = SizeHeader() + SizeBody() - buffer_.Len();
+      int ret = IOHelper::ReadNonBlock(fd, buffer_.Stop(), bytes_left);
+      if (ret>0) {
+        has_bytes_read=true;
+        buffer_.SetLen(buffer_.Len() + ret);
+        return bytes_left-ret;
+      } else if (0==ret) {
+        return has_bytes_read ? bytes_left : kEnd;
+      } else {
+        return ret;
+      }
+    }
+  }
+}
 
 bool Addr::Assign(const std::string& addr_str) {
   size_t pos_sep = addr_str.find(':');

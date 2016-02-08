@@ -70,52 +70,13 @@ int ProtocolWriteThrift::Write(int fd) {
   }
 }
 
-int ProtocolReadThrift::Read(int fd) {
-  bool has_bytes_read=false;
-  for (;;) {
-    size_t bytes_left;
-    if (read_header_) {
-      bytes_left = sizeof(uint32_t) - buffer_.Len();
-      int ret = IOHelper::ReadNonBlock(fd, buffer_.Stop(), bytes_left);
-      if (ret>0) {
-        has_bytes_read=true;
-        buffer_.SetLen(buffer_.Len() + ret);
-        if ( sizeof(uint32_t) == buffer_.Len() ) {
-          read_header_=false;
-
-          size_body_ = ntohl(*((const uint32_t*)buffer_.Start()));
-          buffer_.Clear();
-          buffer_.Reserve(size_body_);
-          continue;
-        }
-      } else if (0==ret) {
-        return has_bytes_read ? bytes_left : kEnd;
-      } else {
-        return ret;
-      }
-    } else {
-      bytes_left = size_body_ - buffer_.Len();
-      int ret = IOHelper::ReadNonBlock(fd, buffer_.Stop(), bytes_left);
-      if (ret>0) {
-        has_bytes_read=true;
-        buffer_.SetLen(buffer_.Len() + ret);
-        return bytes_left-ret;
-      } else if (0==ret) {
-        return has_bytes_read ? bytes_left : kEnd;
-      } else {
-        return ret;
-      }
-    }
-  }
-}
-
 bool ProtocolReadThrift::Decode() {
-  if (buffer_.Len() < kMinSizeBuf || buffer_.Len() > kMaxSizeBuf) {
-    DEBUG("invalid_packet_len[" << buffer_.Len() << "]");
+  if (SizeBody() < kMinSizeBuf || SizeBody() > kMaxSizeBuf) {
+    DEBUG("invalid_packet_len[" << SizeBody() << "]");
     return false;
   }
 
-  protocol_.GetMemBuf().resetBuffer(RCAST<uint8_t*>(buffer_.Start()), buffer_.Len());
+  protocol_.GetMemBuf().resetBuffer(RCAST<uint8_t*>(Body()), SizeBody());
   TMessageType mtype;
   try {
     uint32_t size_func = protocol_.readMessageBegin(fn_, mtype, seqid_); 
@@ -128,7 +89,7 @@ bool ProtocolReadThrift::Decode() {
         return false;
     }
 
-    struct_.Set(buffer_.Start() + size_func, buffer_.Len() - size_func);
+    struct_.Set(Body() + size_func, SizeBody() - size_func);
     protocol_.getTransport()->consume(struct_.Size());
     protocol_.readMessageEnd();
     protocol_.getTransport()->readEnd();

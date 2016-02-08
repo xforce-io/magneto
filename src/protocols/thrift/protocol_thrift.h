@@ -51,7 +51,7 @@ class ProtocolWriteThrift : public ProtocolWrite {
   size_t tmp_num_iovs_;
 };
 
-class ProtocolReadThrift : public ProtocolRead {
+class ProtocolReadThrift : public ProtocolReadWithFixSize<uint32_t> {
  private:
   typedef ProtocolRead Super;
 
@@ -71,8 +71,8 @@ class ProtocolReadThrift : public ProtocolRead {
   Protocol::Category GetCategory() const { return kCategory; }
 
   inline void Reset(const ListenAddr* /*listen_addr*/);
-  int Read(int fd);
-  inline bool Decode();
+  bool Decode();
+  size_t SizeBody() const { return ntohl((const uint32_t&)Header()); }
 
   const char* Data() const { return struct_.Data(); }
   size_t Size() const { return struct_.Size(); }
@@ -85,10 +85,6 @@ class ProtocolReadThrift : public ProtocolRead {
 
  private:
   TSimpleProtocol protocol_;
-
-  Buffer buffer_;
-  bool read_header_;
-  size_t size_body_;
   Slice struct_;
 
   std::string fn_;

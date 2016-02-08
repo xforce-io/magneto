@@ -5,6 +5,8 @@ namespace xforce {
 LOGGER_IMPL(xforce_logger, "magneto")
 }
 
+using namespace xforce;
+
 bool end=false;
 
 void Service(const magneto::ProtocolRead& protocol_read, void* args) {
@@ -28,7 +30,7 @@ void Service(const magneto::ProtocolRead& protocol_read, void* args) {
 
   std::string out;
   magneto::ThriftToBuf<app::PingPongTest_PingPong_result>(pong, out);
-  service.WriteBack(magneto::Buf(magneto::Slice(out.data(), out.size()), &params), 100);
+  service.WriteBack(magneto::Buf(Slice(out.data(), out.size()), &params), 100);
 }
 
 void ClientHandler(void* args) {
@@ -37,7 +39,7 @@ void ClientHandler(void* args) {
   static const size_t kNumReqs=5000;
   size_t succ=0;
   magneto::ProtocolRead* response;
-  magneto::Timer timer;
+  Timer timer;
   app::PingPongTest_PingPong_args ping;
   ping.__isset.ping = true;
   ping.ping.token = 1;
@@ -50,7 +52,7 @@ void ClientHandler(void* args) {
       magneto::ProtocolWriteThrift::kRequest, 
       1);
   for (size_t i=0; i<kNumReqs; ++i) {
-    int ret = client.SimpleTalk("downstream", magneto::Buf(magneto::Slice(out.data(), out.size()), &params), 1000, response);
+    int ret = client.SimpleTalk("downstream", magneto::Buf(Slice(out.data(), out.size()), &params), 1000, response);
     if (magneto::ErrorNo::kOk == ret) {
       magneto::BufToThrift<app::PingPongTest_PingPong_result>(
           response->Data(), 
@@ -81,7 +83,7 @@ int main() {
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
   XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
 
-  ret = server->Start() && client->Start();
+  ret = service->Start() && client->Start();
   XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
 
   delete client; delete service;
