@@ -36,8 +36,6 @@ void Service(const magneto::ProtocolRead& protocol_read, void* args) {
 void ClientHandler(void* args) {
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
 
-  static const size_t kNumReqs=5000;
-  size_t succ=0;
   magneto::ProtocolRead* response;
   Timer timer;
   app::PingPongTest_PingPong_args ping;
@@ -51,19 +49,15 @@ void ClientHandler(void* args) {
       "PingPong", 
       magneto::ProtocolWriteThrift::kRequest, 
       1);
-  for (size_t i=0; i<kNumReqs; ++i) {
-    int ret = client.SimpleTalk("downstream", magneto::Buf(Slice(out.data(), out.size()), &params), 1000, response);
-    if (magneto::ErrorNo::kOk == ret) {
-      magneto::BufToThrift<app::PingPongTest_PingPong_result>(
-          response->Data(), 
-          response->Size(), 
-          pong);
-      if (2 == pong.success.token) ++succ;
-    }
-    client.FreeTalks();
+  int ret = client.SimpleTalk("downstream", magneto::Buf(Slice(out.data(), out.size()), &params), 1000, response);
+  if (magneto::ErrorNo::kOk == ret) {
+    magneto::BufToThrift<app::PingPongTest_PingPong_result>(
+        response->Data(), 
+        response->Size(), 
+        pong);
+    assert(2 == pong.success.token);
   }
-  timer.Stop(true);
-  printf("succ[%lu] cost[%lu]\n", succ, timer.TimeUs());
+  client.FreeTalks();
   end=true;
 }
 
@@ -76,21 +70,16 @@ int main() {
 
   // init service
   int ret = service->Init("conf/confs_server/", &Service, NULL, service, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_server")
+  assert(true == ret);
 
   // init client
   client_handle.push_back(std::make_pair(ClientHandler, 100));
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
+  assert(true == ret);
 
   ret = service->Start() && client->Start();
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
+  assert(true == ret);
 
   delete client; delete service;
   return 0;
-
-  ERROR_HANDLE:
-  end=true;
-  delete client; delete service;
-  return -1;
 }

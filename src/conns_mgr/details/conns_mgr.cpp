@@ -8,20 +8,25 @@ ConnsMgr::ConnsMgr(time_t long_conn_keepalive_sec) :
 }
 
 void ConnsMgr::ConfigRemotes(const ConfServices::Remotes& remotes) {
+  remotes_ = remotes;
+
   ConfServices::Remotes::const_iterator iter;
+
+  /* add new pools */
   for (iter = remotes.begin(); iter != remotes.end(); ++iter) {
-    PoolConnsPerRemote** pool = conns_.Get(*iter);
+    PoolConnsPerRemote** pool = conns_.Get(iter->first);
     if (unlikely(NULL==pool)) {
       XFC_NEW_DECL(
           pool_conns_per_remote, 
           PoolConnsPerRemote,
-          PoolConnsPerRemote(*iter, long_conn_keepalive_sec_))
-      conns_.Insert(*iter, pool_conns_per_remote);
-      pool = conns_.Get(*iter);
+          PoolConnsPerRemote(iter->second, long_conn_keepalive_sec_))
+      conns_.Insert(iter->first, pool_conns_per_remote);
+      pool = conns_.Get(iter->first);
     }
-    (*pool)->SetNumLongConnsPerRemote(iter->long_conns);
+    (*pool)->SetNumLongConnsPerRemote(iter->second.long_conns);
   }
 
+  /* remove unused pools */
   Container::Iterator iter_2;
   for (iter_2 = conns_.Begin(); !iter_2.IsEnd(); iter_2.Next()) {
     ConfServices::Remotes::const_iterator iter_remote = remotes.find(iter_2->first);
@@ -29,7 +34,7 @@ void ConnsMgr::ConfigRemotes(const ConfServices::Remotes& remotes) {
       PoolConnsPerRemote** pool = conns_.Get(iter_2->first);
       XFC_DELETE(*pool)
 
-      unhealthy_guys_.erase(iter_2->first);
+      unhealthy_remotes_.erase(iter_2->first);
       conns_.Erase(iter_2->first);
     }  
   }
@@ -41,7 +46,7 @@ const Remote* ConnsMgr::GetRemoteWeight_(
   static unsigned int seed=0;
 
   int weight=0;
-  if (0 == unhealthy_guys_.size()) {
+  if (0 == unhealthy_remotes_.size()) {
     int random = rand_r(&seed) % service.weight_all;
     for (size_t i=0; i < service.remotes.size(); ++i) {
       weight += service.remotes[i].weight;
@@ -61,7 +66,7 @@ const Remote* ConnsMgr::GetRemoteWeight_(
 
     size_t weight_all=0;
     for (iter = tmp_remotes_.begin(); iter != tmp_remotes_.end(); ++iter) {
-      size_t tmp_weight = iter->weight * (*conns_.Get(*iter))->GetHealthMark();
+      size_t tmp_weight = iter->weight * (*conns_.Get(iter->name))->GetHealthMark();
       weight_all+=tmp_weight;
       tmp_weights_.push_back(tmp_weight);
     }

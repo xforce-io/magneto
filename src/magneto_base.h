@@ -27,6 +27,7 @@ class MagnetoBase {
 
   inline const std::vector<std::string>* GetServiceNames(const std::string& services_set);
 
+  /* services set interface */
   inline int Write(
       IN const std::string& services_set,
       IN const Bufs& bufs,
@@ -38,12 +39,13 @@ class MagnetoBase {
       IN time_t timeo_ms,
       OUT Responses& responses);
 
-  inline int Talks(
+  inline int ParaTalks(
       IN const std::string& services_set,
       IN const Bufs& bufs,
       IN time_t timeo_ms,
       OUT Responses& responses);
 
+  /* service interface */
   inline int Write(
       const std::string& service, 
       const Buf& buf, 
@@ -56,6 +58,26 @@ class MagnetoBase {
 
   inline int SimpleTalk(
       IN const std::string& service,
+      IN const Buf& buf,
+      IN time_t timeo_ms,
+      OUT ProtocolRead*& protocol_read);
+
+  /* remote interface */
+  inline int Write(
+      const std::string& service_name,
+      const std::string& remote,
+      const Buf& buf,
+      time_t timeo_ms); 
+
+  inline int Read(
+      IN const std::string& service_name,
+      IN const std::string& remote, 
+      IN time_t timeo_ms, 
+      OUT ProtocolRead*& protocol_read); 
+
+  inline int SimpleTalk(
+      IN const std::string& service_name,
+      IN const std::string& remote,
       IN const Buf& buf,
       IN time_t timeo_ms,
       OUT ProtocolRead*& protocol_read);
@@ -114,7 +136,7 @@ int MagnetoBase::Read(
   return io_basic_->Read(*biz_procedure, *services_set, timeo_ms, responses);
 }
 
-int MagnetoBase::Talks(
+int MagnetoBase::ParaTalks(
     const std::string& services_set_name,
     const Bufs& bufs,
     time_t timeo_ms,
@@ -123,7 +145,7 @@ int MagnetoBase::Talks(
   if (unlikely(NULL==services_set)) return ErrorNo::kNotFound;
 
   BizProcedure* biz_procedure = BizProcedure::GetCurrentBizProcedure();
-  return io_basic_->Talks(*biz_procedure, *services_set, bufs, timeo_ms, responses);
+  return io_basic_->ParaTalks(*biz_procedure, *services_set, bufs, timeo_ms, responses);
 }
 
 int MagnetoBase::Write(const std::string& service_name, const Buf& buf, time_t timeo_ms) {
@@ -152,6 +174,52 @@ int MagnetoBase::SimpleTalk(
 
   BizProcedure* biz_procedure = BizProcedure::GetCurrentBizProcedure();
   return io_basic_->SimpleTalk(*biz_procedure, *service, buf, timeo_ms, protocol_read);
+}
+
+int MagnetoBase::Write(
+      const std::string& service_name,
+      const std::string& remote_name,
+      const Buf& buf,
+      time_t timeo_ms) {
+  const Service* service = confs_->GetConfServices()->GetService(service_name);
+  if (unlikely(NULL==service)) return ErrorNo::kNotFound; 
+
+  const Remote* remote = confs_->GetConfServices()->GetRemote(remote_name);
+  if (unlikely(NULL==remote)) return ErrorNo::kNotFound;
+
+  BizProcedure* biz_procedure = BizProcedure::GetCurrentBizProcedure();
+  return io_basic_->Write(*biz_procedure, *service, *remote, buf, timeo_ms);
+}
+
+int MagnetoBase::Read(
+      const std::string& service_name,
+      const std::string& remote_name, 
+      time_t timeo_ms, 
+      ProtocolRead*& protocol_read) {
+  const Service* service = confs_->GetConfServices()->GetService(service_name);
+  if (unlikely(NULL==service)) return ErrorNo::kNotFound; 
+
+  const Remote* remote = confs_->GetConfServices()->GetRemote(remote_name);
+  if (unlikely(NULL==remote)) return ErrorNo::kNotFound;
+
+  BizProcedure* biz_procedure = BizProcedure::GetCurrentBizProcedure();
+  return io_basic_->Read(*biz_procedure, *service, *remote, timeo_ms, protocol_read);
+}
+
+int MagnetoBase::SimpleTalk(
+      const std::string& service_name,
+      const std::string& remote_name,
+      const Buf& buf,
+      time_t timeo_ms,
+      ProtocolRead*& protocol_read) {
+  const Service* service = confs_->GetConfServices()->GetService(service_name);
+  if (unlikely(NULL==service)) return ErrorNo::kNotFound; 
+
+  const Remote* remote = confs_->GetConfServices()->GetRemote(remote_name);
+  if (unlikely(NULL==remote)) return ErrorNo::kNotFound;
+
+  BizProcedure* biz_procedure = BizProcedure::GetCurrentBizProcedure();
+  return io_basic_->SimpleTalk(*biz_procedure, *service, *remote, buf, timeo_ms, protocol_read);
 }
 
 int MagnetoBase::WriteBack(const Buf& buf, time_t timeo_ms) {

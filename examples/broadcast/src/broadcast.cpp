@@ -6,36 +6,15 @@ LOGGER_IMPL(xforce_logger, "magneto")
 
 using namespace xforce;
 
-static const size_t kNumClients=50;
-static const size_t kNumReqs=500000;
 static const size_t kTimeoutMs=500;
 static const int8_t kInput=10;
-int num_reqs=kNumReqs;
-int num_finished_clients=kNumClients;
-int succ=0;
 bool end=false;
 
 void ClientHandler(void* args) {
-  Timer timer;
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
-  while ( __sync_sub_and_fetch(&num_reqs, 1) >= 0 ) {
-    client.Write("agent", magneto::Buf(Slice(RCAST<const char*>(&kInput), 1), NULL), kTimeoutMs);
-    client.FreeTalks();
-  }
-
-  if (0 == __sync_sub_and_fetch(&num_finished_clients, 1)) {
-    end=true;
-    while (true) {
-        int prev_succ=succ;
-        sleep(1);
-        if (succ==prev_succ) {
-            break;
-        }
-    }
-    timer.Stop(true);
-    printf("all[%lu] succ[%d] cost[%lu] qps[%f]\n", 
-            kNumReqs, succ, timer.TimeUs(), kNumReqs*1000000.0/timer.TimeUs());
-  }
+  client.Write("agent", magneto::Buf(Slice(RCAST<const char*>(&kInput), 1), NULL), kTimeoutMs);
+  client.FreeTalks();
+  end=true;
 }
 
 void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
@@ -56,11 +35,7 @@ void AgentService(const magneto::ProtocolRead& protocol_read, void* args) {
 
 void ConsumerService(const magneto::ProtocolRead& protocol_read, void* /*args*/) {
   const magneto::ProtocolReadRapid& protocol_read_rapid = SCAST<const magneto::ProtocolReadRapid&>(protocol_read);
-  if ( kInput == *(protocol_read_rapid.Data()) ) {
-    __sync_add_and_fetch(&succ, 1);
-  } else {
-      printf("what");
-  }
+  assert( kInput == *(protocol_read_rapid.Data()) );
 }
 
 int main() {
@@ -75,27 +50,21 @@ int main() {
   magneto::RoutineItems client_handle;
 
   int ret = agent->Init("conf/agent/", &AgentService, NULL, agent, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_agent")
+  assert(true == ret);
 
   ret = consumer0->Init("conf/consumer0/", &ConsumerService, NULL, consumer0, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_plus_master")
+  assert(true == ret);
 
   ret = consumer1->Init("conf/consumer1/", &ConsumerService, NULL, consumer1, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_plus_slave")
+  assert(true == ret);
 
-  client_handle.push_back(std::make_pair(ClientHandler, kNumClients));
+  client_handle.push_back(std::make_pair(ClientHandler, 1));
   ret = client->Init("conf/client/", NULL, &client_handle, client, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
+  assert(true == ret);
 
   ret = agent->Start() && consumer0->Start() && consumer1->Start() && client->Start();
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
+  assert(true == ret);
 
-  client->Stop();
   delete [] servers;
   return 0;
-
-  ERROR_HANDLE:
-  end=true;
-  delete [] servers;
-  return -1;
 }

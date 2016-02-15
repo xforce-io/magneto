@@ -69,7 +69,7 @@ void Agents::SendMsgWithRetry(int id, Msg& msg) {
     ++times;
     if (0 == times%kWarnThreshold) {
       WARN("agents_send_msg_retry[" << times << "]");
-      usleep(1000);
+      usleep(10);
     }
   }
 }

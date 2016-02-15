@@ -7,14 +7,6 @@ namespace xforce { namespace magneto {
 
 //typedef bool (*FuncReadChecker)(const char* buf, size_t count);
 
-struct Addr {
- public: 
-  sockaddr_in addr;
-
- public:
-  inline bool Assign(const std::string& addr);
-};
-
 struct Protocol {
   enum Category {
     kRapid,

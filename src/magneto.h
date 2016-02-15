@@ -28,6 +28,7 @@ class Magneto {
 
   const std::vector<std::string>* GetServiceNames(const std::string& services_set);
 
+  /* services set interface */
   int Write(
       IN const std::string& services_set,
       IN const Bufs& bufs,
@@ -39,12 +40,13 @@ class Magneto {
       IN time_t timeo_ms,
       OUT Responses& responses);
 
-  int Talks(
+  int ParaTalks(
       IN const std::string& services_set,
       IN const Bufs& bufs,
       IN time_t timeo_ms,
       OUT Responses& responses);
 
+  /* service interface */
   int Write(
       const std::string& service, 
       const Buf& buf,
@@ -57,6 +59,26 @@ class Magneto {
 
   int SimpleTalk(
       IN const std::string& service,
+      IN const Buf& buf,
+      IN time_t timeo_ms,
+      OUT ProtocolRead*& protocol_read);
+
+  /* remote interface */
+  int Write(
+      const std::string& service,
+      const std::string& remote,
+      const Buf& buf,
+      time_t timeo_ms); 
+
+  int Read(
+      IN const std::string& service,
+      IN const std::string& remote, 
+      IN time_t timeo_ms, 
+      OUT ProtocolRead*& protocol_read); 
+
+  int SimpleTalk(
+      IN const std::string& service,
+      IN const std::string& remote,
       IN const Buf& buf,
       IN time_t timeo_ms,
       OUT ProtocolRead*& protocol_read);

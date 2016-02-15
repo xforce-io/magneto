@@ -31,13 +31,10 @@ void Talk::Assign(
     retry=0;
   }
 
-  if (NULL==buf_arg) {
-    status=kEnd;
-    return;
-  }
-
   switch (category) {
     case kWriteAndRead : {
+      if (NULL==buf) { status=kEnd; return; }
+
       protocol_write = PoolProtocols::GetWrite(protocol_category);
       protocol_write->Reset(*buf);
       ret = protocol_write->Encode();
@@ -53,6 +50,8 @@ void Talk::Assign(
       break;
     }
     case kWriteOnly : {
+      if (NULL==buf) { status=kEnd; return; }
+
       protocol_write = PoolProtocols::GetWrite(protocol_category);
       protocol_write->Reset(*buf);
       ret = protocol_write->Encode();

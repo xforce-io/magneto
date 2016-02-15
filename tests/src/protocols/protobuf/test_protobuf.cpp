@@ -3,6 +3,7 @@
 #include "../../../../src/protocols/protobuf/protocol_protobuf.h"
 #include "sample.pb.h"
 
+using namespace xforce;
 using namespace xforce::magneto;
 
 namespace xforce {

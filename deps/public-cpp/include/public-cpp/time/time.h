@@ -6,9 +6,9 @@ namespace xforce {
 
 class Time {
  public:
-  inline static time_t GetCurrentSec(bool update);
-  inline static time_t GetCurrentMsec(bool update);
-  inline static time_t GetCurrentUsec(bool update);
+  inline static time_t GetCurrentSec(bool update=true);
+  inline static time_t GetCurrentMsec(bool update=true);
+  inline static time_t GetCurrentUsec(bool update=true);
   inline static void UpdateTimer();
   static void UninteruptbleSleep(time_t sec);
 

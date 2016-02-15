@@ -15,7 +15,6 @@ struct Msg {
  public:
   enum Category {
     kInvalid,
-    kConfig,
     kReadReq,
     kNewReq,
     kSession,
@@ -33,12 +32,6 @@ struct Msg {
  public:
   Category category;
   uint32_t size;
-};
-
-struct MsgConfig : public Msg {
- public:
-  MsgConfig() : Msg(Msg::kConfig, sizeof(MsgConfig)) {} 
-  void BuildForConfig() {}
 };
 
 struct MsgReadReq : public Msg {
@@ -133,9 +126,6 @@ Msg::Msg(Msg::Category category_arg, uint32_t size_arg) :
 
 void Msg::Copy(const Msg& msg) {
   switch (category) {
-    case Msg::kConfig :
-      SCAST<MsgConfig&>(*this) = SCAST<const MsgConfig&>(msg);
-      break;
     case Msg::kReadReq :
       SCAST<MsgReadReq&>(*this) = SCAST<const MsgReadReq&>(msg);
       break;

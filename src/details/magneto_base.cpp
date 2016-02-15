@@ -74,6 +74,7 @@ bool MagnetoBase::Start() {
 
 void MagnetoBase::Stop() {
   while (!*end_) {
+    confs_->Reload();
     sleep(1);
   }
 

@@ -115,12 +115,12 @@
 #define LOGGER_STATIC_DECL_IMPL(logger,name) \
     static log4cplus::Logger logger = log4cplus::Logger::getInstance(name);
 
-#define TRACE(log)  LOG4CPLUS_TRACE(xforce_logger, log)
-#define DEBUG(log) LOG4CPLUS_DEBUG(xforce_logger, log)
-#define NOTICE(log) LOG4CPLUS_INFO(xforce_logger, log)
-#define WARN(log) LOG4CPLUS_WARN(xforce_logger, log)
-#define ERROR(log)  LOG4CPLUS_ERROR(xforce_logger, log)
-#define FATAL(log) LOG4CPLUS_FATAL(xforce_logger, log)
+#define TRACE(log)  LOG4CPLUS_TRACE(xforce::xforce_logger, log)
+#define DEBUG(log) LOG4CPLUS_DEBUG(xforce::xforce_logger, log)
+#define NOTICE(log) LOG4CPLUS_INFO(xforce::xforce_logger, log)
+#define WARN(log) LOG4CPLUS_WARN(xforce::xforce_logger, log)
+#define ERROR(log)  LOG4CPLUS_ERROR(xforce::xforce_logger, log)
+#define FATAL(log) LOG4CPLUS_FATAL(xforce::xforce_logger, log)
 
 #define TRACE_LOG(logger, log)  LOG4CPLUS_TRACE(logger, log)
 #define DEBUG_LOG(logger, log) LOG4CPLUS_DEBUG(logger, log)

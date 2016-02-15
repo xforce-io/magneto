@@ -22,33 +22,26 @@ void Service(const magneto::ProtocolRead& protocol_read, void* args) {
 void ClientHandler(void* args) {
   magneto::Magneto& client = *RCAST<magneto::Magneto*>(args);
 
-  static const size_t kNumReqs=5000;
-  size_t succ=0;
   magneto::ProtocolRead* response;
-  Timer timer;
-  for (size_t i=0; i<kNumReqs; ++i) {
-    magneto::ProtocolWriteProtobuf protocol_write;
-    ::Test::Msg msg;
-    msg.set_userid(1);
-    msg.set_name("2");
-    msg.add_creattime(3);
+  magneto::ProtocolWriteProtobuf protocol_write;
+  ::Test::Msg msg;
+  msg.set_userid(1);
+  msg.set_name("2");
+  msg.add_creattime(3);
 
-    int ret = client.SimpleTalk(
-        "downstream", 
-        magneto::Buf(Slice(RCAST<char*>(&msg), 0), RCAST<const void*>("Test.Msg")), 
-        1000, 
-        response);
-    if (magneto::ErrorNo::kOk == ret) {
-      const magneto::ProtocolReadProtobuf& response_pb = 
-        *SCAST<const magneto::ProtocolReadProtobuf*>(response);
-      const ::Test::Msg* msg = RCAST<const ::Test::Msg*>(
-          response_pb.GetMsg());
-      if (1 == msg->userid()) ++succ;
-    }
-    client.FreeTalks();
+  int ret = client.SimpleTalk(
+      "downstream", 
+      magneto::Buf(Slice(RCAST<char*>(&msg), 0), RCAST<const void*>("Test.Msg")), 
+      1000, 
+      response);
+  if (magneto::ErrorNo::kOk == ret) {
+    const magneto::ProtocolReadProtobuf& response_pb = 
+      *SCAST<const magneto::ProtocolReadProtobuf*>(response);
+    const ::Test::Msg* msg = RCAST<const ::Test::Msg*>(
+        response_pb.GetMsg());
+    assert(1 == msg->userid());
   }
-  timer.Stop(true);
-  printf("succ[%lu] cost[%lu]\n", succ, timer.TimeUs());
+  client.FreeTalks();
   end=true;
 }
 
@@ -61,21 +54,16 @@ int main() {
 
   // init service
   int ret = service->Init("conf/confs_server/", &Service, NULL, service, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_server")
+  assert(true == ret);
 
   // init client
   client_handle.push_back(std::make_pair(ClientHandler, 10));
   ret = client->Init("conf/confs_client/", NULL, &client_handle, client, end);
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_init_client")
+  assert(true == ret);
 
   ret = service->Start() && client->Start();
-  XFC_FAIL_HANDLE_FATAL_LOG(xforce_logger, !ret, "fail_run_services")
+  assert(true == ret);
 
   delete client; delete service;
   return 0;
-
-  ERROR_HANDLE:
-  end=true;
-  delete client; delete service;
-  return -1;
 }

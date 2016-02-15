@@ -110,9 +110,6 @@ void Scheduler::Process_() {
     if (unlikely(cur_msg.category != new_msg->category)) {
       XFC_DELETE(new_msg)
       switch (cur_msg.category) {
-        case Msg::kConfig :
-          XFC_NEW(new_msg, MsgConfig)
-          break;
         case Msg::kReadReq :
           XFC_NEW(new_msg, MsgReadReq)
           break;

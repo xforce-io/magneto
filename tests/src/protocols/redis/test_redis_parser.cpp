@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
 #include "../../../../src/protocols/redis/redis_parser.h"
 
-using namespace magneto;
+using namespace xforce;
+using namespace xforce::magneto;
 
-namespace xforce { namespace magneto {
+namespace xforce {
 LOGGER_IMPL(xforce_logger, "magneto")
-}}
+}
 
 
 int main(int argc, char** argv) {
@@ -35,7 +36,7 @@ TEST_F(TestRedisParser, ParseReplySeg) {
   result.clear();
   ret = RedisParser::ParseReplySeg_(reply, 0, &size_reply_seg, &result);
   ASSERT_EQ(ret, 0);
-  ASSERT_EQ(result, "-1");
+  ASSERT_EQ(result, "__null");
   ASSERT_EQ(size_reply_seg, 5);
 
   reply = std::string("$-1\r");
@@ -118,7 +119,7 @@ TEST_F(TestRedisParser, ParseReply) {
   result.clear();
   ret = RedisParser::ParseReply(reply, &is_pong, &size_reply, &result);
   ASSERT_EQ(ret, 0);
-  ASSERT_EQ(result, "-1");
+  ASSERT_EQ(result, "__null");
   ASSERT_EQ(size_reply, 8);
 
   reply = std::string("-");
@@ -175,7 +176,7 @@ TEST_F(TestRedisParser, ParseReply) {
   result.clear();
   ret = RedisParser::ParseReply(reply, &is_pong, &size_reply, &result);
   ASSERT_EQ(ret, 0);
-  ASSERT_EQ(result, "2""\1""-1""\1""-1");
+  ASSERT_EQ(result, "2""\1""__null""\1""__null");
   ASSERT_EQ(size_reply, 14);
 
   reply = std::string("*-1\r\n");
@@ -214,7 +215,6 @@ TEST_F(TestRedisParser, ParseCmd) {
   ASSERT_EQ(result, "*4\r\n$4\r\nMGET\r\n$1\r\n1\r\n$2\r\n22\r\n$1\r\n3\r\n");
 
   request = std::string("MGET""\1");
-  std::cout << request.length() << std::endl;
   ret = RedisParser::ParseCmd(request, &result);
   ASSERT_EQ(ret, true);
   ASSERT_EQ(result, "*1\r\n$4\r\nMGET\r\n");

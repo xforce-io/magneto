@@ -11,44 +11,6 @@ namespace xforce { namespace magneto {
 class ProtocolWrite;
 class ProtocolRead;
 
-struct Remote {
- public: 
-  struct HashRemote {
-    size_t operator()(const Remote& remote) const {
-      return std::tr1::hash<size_t>()( ((size_t)(remote.addr.addr.sin_port) << 32) + 
-        remote.addr.addr.sin_addr.s_addr );
-    }
-  };
-
-  struct EqRemote {
-    bool operator()(const Remote& left, const Remote& right) const {
-      return left.addr.addr.sin_addr.s_addr == right.addr.addr.sin_addr.s_addr
-        && left.addr.addr.sin_port == right.addr.addr.sin_port;
-    }
-  };
-
-  Remote& operator=(const Remote& other) {
-    if (unlikely(this == &other)) return *this;
-
-    addr.addr.sin_addr.s_addr = other.addr.addr.sin_addr.s_addr;
-    addr.addr.sin_port = other.addr.addr.sin_port;
-    weight = other.weight;
-    long_conns = other.long_conns;
-    ctimeo_ms = other.ctimeo_ms;
-    rtimeo_ms = other.rtimeo_ms;
-    wtimeo_ms = other.wtimeo_ms;
-    return *this;
-  }
-
- public:
-  Addr addr;
-  size_t weight;
-  size_t long_conns;
-  time_t ctimeo_ms;
-  time_t rtimeo_ms;
-  time_t wtimeo_ms;
-};
-
 struct ServiceStrategy {
  public: 
   enum Type {

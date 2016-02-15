@@ -7,7 +7,7 @@ namespace xforce { namespace magneto {
 
 class ConfServices {
  public:
-  typedef std::tr1::unordered_set<Remote, Remote::HashRemote, Remote::EqRemote> Remotes;
+  typedef std::tr1::unordered_map<std::string, Remote> Remotes;
   typedef std::tr1::unordered_map<std::string, Service*> Services;
   typedef std::tr1::unordered_map<std::string, ServicesSet*> ServicesSets;
   typedef std::tr1::unordered_map< std::string, std::vector<std::string> > SetToServices;
@@ -23,6 +23,7 @@ class ConfServices {
   const Services& GetServices() const { return services_; }
   const ServicesSets& GetServicesSets() const { return services_sets_; }
 
+  inline const Remote* GetRemote(const std::string& remote) const;
   inline const Service* GetService(const std::string& service) const;
   inline const ServicesSet* GetServicesSet(const std::string& services_set) const;
   inline const std::vector<std::string>* GetServiceNames(const std::string services_set) const;
@@ -49,6 +50,11 @@ class ConfServices {
   ServicesSets services_sets_;
   SetToServices set_to_services_;
 };
+
+const Remote* ConfServices::GetRemote(const std::string& remote) const {
+  Remotes::const_iterator iter = remotes_.find(remote);
+  return remotes_.end() != iter ? &(iter->second) : NULL;
+}
 
 const Service* ConfServices::GetService(const std::string& service) const {
   Services::const_iterator iter = services_.find(service);

@@ -23,6 +23,7 @@ class AgentSlave {
   static const size_t kMaxNumMailsProcessedOnce=100000;
   static const size_t kBacklog=1024;
   static const size_t kThreholdSenderNotify=3;
+  static const time_t kConfReloadIntervalSec=5;
 
  public:
   AgentSlave();
@@ -122,10 +123,10 @@ void AgentSlave::SendBackMsg_(Msg& msg) {
       ret = scheduler.SendMsg(msg);
       ++times;
 
-      static const size_t kThreholdWarn=10000;
+      static const size_t kThreholdWarn=1000;
       if (0 == times%kThreholdWarn) {
         WARN("agent_slave_wait_to_send_back_msg times[" << times << "]");
-        usleep(1000);
+        usleep(10);
       }
     } while (!ret);
   }

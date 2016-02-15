@@ -82,6 +82,7 @@ void* AgentSlave::Run_(void* args) {
   Self& self = *(RCAST<Self*>(args));
   while (!(self.end_)) {
     self.Process_();
+    self.conns_mgr_->ConfigRemotes(self.confs_->GetConfServices()->GetRemotes());
   }
   self.Process_();
   return NULL;
@@ -245,10 +246,6 @@ bool AgentSlave::CheckMailbox_() {
     if (unlikely(NULL==msg)) break;
 
     switch (msg->category) {
-      case Msg::kConfig : {
-        conns_mgr_->ConfigRemotes(confs_->GetConfServices()->GetRemotes());
-        break;
-      }
       case Msg::kSession : {
         MsgSession& msg_session = *SCAST<MsgSession*>(msg);
         TRACE("CheckMailbox_kSession["
@@ -489,13 +486,13 @@ void AgentSlave::HandleMsgDestruct_(MsgDestruct& msg_destruct) {
   if (NULL == msg_destruct.big_cache) {
     for (size_t i=0; i < msg_destruct.small_cache.num; ++i) {
       conns_mgr_->FreeFd(
-          *(msg_destruct.small_cache.small_cache[i].second),
+          msg_destruct.small_cache.small_cache[i].second->name,
           msg_destruct.small_cache.small_cache[i].first);
     }
   } else {
     for (size_t i=0; i < msg_destruct.big_cache->size(); ++i) {
       conns_mgr_->FreeFd(
-          *((*msg_destruct.big_cache)[i].second),
+          (*msg_destruct.big_cache)[i].second->name,
           (*msg_destruct.big_cache)[i].first);
     }
     XFC_DELETE(msg_destruct.big_cache)

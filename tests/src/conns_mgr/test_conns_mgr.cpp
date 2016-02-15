@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
 #include "../../../src/conns_mgr/conns_mgr.h"
 
-using namespace magneto;
+using namespace xforce;
+using namespace xforce::magneto;
 
-namespace xforce { namespace magneto {
+namespace xforce {
 LOGGER_IMPL(xforce_logger, "magneto")
-}}
+}
 
 int main(int argc, char** argv) {
   srand(time(NULL));
@@ -157,7 +158,7 @@ void TestConnsMgr::TestCase0_(
     const Remotes& fail_remotes) {
   const static size_t kTimesTest=100000;
 
-  ASSERT_EQ(0, conns_mgr.unhealthy_guys_.size());
+  ASSERT_EQ(0, conns_mgr.unhealthy_remotes_.size());
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[0]));
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[1]));
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[2]));
@@ -171,7 +172,7 @@ void TestConnsMgr::TestCase0_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteWeight_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -187,7 +188,7 @@ void TestConnsMgr::TestCase0_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteNormal_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -202,7 +203,7 @@ void TestConnsMgr::TestCase1_(
     const Remotes& fail_remotes) {
   const static size_t kTimesTest=100000;
 
-  ASSERT_EQ(1, conns_mgr.unhealthy_guys_.size());
+  ASSERT_EQ(1, conns_mgr.unhealthy_remotes_.size());
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[0]));
   ASSERT_TRUE(!conns_mgr.IsHealthy_(remotes[1]));
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[2]));
@@ -216,7 +217,7 @@ void TestConnsMgr::TestCase1_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteWeight_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -236,7 +237,7 @@ void TestConnsMgr::TestCase2_(
     const Remotes& fail_remotes) {
   const static size_t kTimesTest=100000;
 
-  ASSERT_EQ(2, conns_mgr.unhealthy_guys_.size());
+  ASSERT_EQ(2, conns_mgr.unhealthy_remotes_.size());
   ASSERT_TRUE(!conns_mgr.IsHealthy_(remotes[0]));
   ASSERT_TRUE(!conns_mgr.IsHealthy_(remotes[1]));
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[2]));
@@ -250,7 +251,7 @@ void TestConnsMgr::TestCase2_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteWeight_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -268,7 +269,7 @@ void TestConnsMgr::TestCase2_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteNormal_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -283,7 +284,7 @@ void TestConnsMgr::TestCase3_(
     const Remotes& fail_remotes) {
   const static size_t kTimesTest=100000;
 
-  ASSERT_EQ(1, conns_mgr.unhealthy_guys_.size());
+  ASSERT_EQ(1, conns_mgr.unhealthy_remotes_.size());
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[0]));
   ASSERT_TRUE(!conns_mgr.IsHealthy_(remotes[1]));
   ASSERT_TRUE(conns_mgr.IsHealthy_(remotes[2]));
@@ -297,7 +298,7 @@ void TestConnsMgr::TestCase3_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteWeight_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -313,7 +314,7 @@ void TestConnsMgr::TestCase3_(
   for (size_t i=0; i<kTimesTest; ++i) {
     const Remote* remote = conns_mgr_.GetRemoteNormal_(service, fail_remotes);
     for (size_t i=0; i < chooses.size(); ++i) {
-      if (Remote::EqRemote()(remotes[i], *remote)) {
+      if (remotes[i].name == remote->name) {
         ++chooses[i];
       }
     }
@@ -326,43 +327,39 @@ TEST_F(TestConnsMgr, all) {
   const ConfServices::Remotes& all_remotes = conf_services->GetRemotes();
   ConfServices::Remotes::const_iterator iter = all_remotes.begin();
   Remotes remotes;
-  Remote tmp_remote;
-  tmp_remote.addr.Assign("0.0.0.0:6610");
-  remotes.push_back(*(all_remotes.find(tmp_remote)));
-  tmp_remote.addr.Assign("0.0.0.0:6620");
-  remotes.push_back(*(all_remotes.find(tmp_remote)));
-  tmp_remote.addr.Assign("0.0.0.0:6630");
-  remotes.push_back(*(all_remotes.find(tmp_remote)));
+  remotes.push_back(all_remotes.find("0.0.0.0:6610")->second);
+  remotes.push_back(all_remotes.find("0.0.0.0:6620")->second);
+  remotes.push_back(all_remotes.find("0.0.0.0:6630")->second);
 
   ConnsMgr::Remotes fail_remotes;
 
   conns_mgr_.ConfigRemotes(all_remotes);
 
-  conns_mgr_.ReportStatus(remotes[0], true);
-  conns_mgr_.ReportStatus(remotes[1], true);
-  conns_mgr_.ReportStatus(remotes[2], true);
+  conns_mgr_.ReportStatus(remotes[0].name, true);
+  conns_mgr_.ReportStatus(remotes[1].name, true);
+  conns_mgr_.ReportStatus(remotes[2].name, true);
   TestCase0_(*(conf_services->GetServices().begin()->second), conns_mgr_, remotes, fail_remotes);
 
-  conns_mgr_.ReportStatus(remotes[0], true);
-  conns_mgr_.ReportStatus(remotes[1], false);
-  conns_mgr_.ReportStatus(remotes[2], true);
+  conns_mgr_.ReportStatus(remotes[0].name, true);
+  conns_mgr_.ReportStatus(remotes[1].name, false);
+  conns_mgr_.ReportStatus(remotes[2].name, true);
   TestCase1_(*(conf_services->GetServices().begin()->second), conns_mgr_, remotes, fail_remotes);
 
-  conns_mgr_.ReportStatus(remotes[0], false);
-  conns_mgr_.ReportStatus(remotes[1], false);
-  conns_mgr_.ReportStatus(remotes[2], true);
+  conns_mgr_.ReportStatus(remotes[0].name, false);
+  conns_mgr_.ReportStatus(remotes[1].name, false);
+  conns_mgr_.ReportStatus(remotes[2].name, true);
   TestCase2_(*(conf_services->GetServices().begin()->second), conns_mgr_, remotes, fail_remotes);
 
-  conns_mgr_.ReportStatus(remotes[0], true);
-  conns_mgr_.ReportStatus(remotes[1], true);
-  conns_mgr_.ReportStatus(remotes[2], true);
+  conns_mgr_.ReportStatus(remotes[0].name, true);
+  conns_mgr_.ReportStatus(remotes[1].name, true);
+  conns_mgr_.ReportStatus(remotes[2].name, true);
   fail_remotes.push_back(remotes[2]);
   TestCase3_(*(conf_services->GetServices().begin()->second), conns_mgr_, remotes, fail_remotes);
 
   ConfServices* conf_services1 = InitConfServices1_();
   conns_mgr_.ConfigRemotes(conf_services1->GetRemotes());
   ASSERT_EQ(2, conns_mgr_.conns_.Size());
-  ASSERT_EQ(0, conns_mgr_.unhealthy_guys_.size());
+  ASSERT_EQ(0, conns_mgr_.unhealthy_remotes_.size());
 
   delete conf_services1;
   delete conf_services;

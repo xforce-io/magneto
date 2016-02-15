@@ -39,12 +39,12 @@ int Magneto::Read(
   return magneto_base_->Read(services_set, timeo_ms, responses);
 }
 
-int Magneto::Talks(
+int Magneto::ParaTalks(
     const std::string& services_set,
     const Bufs& bufs,
     time_t timeo_ms,
     Responses& responses) {
-  return magneto_base_->Talks(services_set, bufs, timeo_ms, responses);
+  return magneto_base_->ParaTalks(services_set, bufs, timeo_ms, responses);
 }
 
 int Magneto::Write(
@@ -67,6 +67,31 @@ int Magneto::SimpleTalk(
     time_t timeo_ms,
     ProtocolRead*& protocol_read) {
   return magneto_base_->SimpleTalk(service, buf, timeo_ms, protocol_read);
+}
+
+int Magneto::Write(
+    const std::string& service,
+    const std::string& remote,
+    const Buf& buf,
+    time_t timeo_ms) {
+  return magneto_base_->Write(service, remote, buf, timeo_ms);
+}
+
+int Magneto::Read(
+    const std::string& service,
+    const std::string& remote, 
+    time_t timeo_ms, 
+    ProtocolRead*& protocol_read) {
+  return magneto_base_->Read(service, remote, timeo_ms, protocol_read);
+}
+
+int Magneto::SimpleTalk(
+    const std::string& service,
+    const std::string& remote,
+    const Buf& buf,
+    time_t timeo_ms,
+    ProtocolRead*& protocol_read) {
+  return magneto_base_->SimpleTalk(service, remote, buf, timeo_ms, protocol_read);
 }
 
 int Magneto::WriteBack(const Buf& buf, time_t timeo_ms) {

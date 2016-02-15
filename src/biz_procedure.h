@@ -21,6 +21,7 @@ class BizProcedure {
  public: 
   typedef PoolObjs< std::vector<Talk> > PoolTalks;
   typedef std::tr1::unordered_map< size_t, std::pair<int, const Remote*> > ServiceCache;
+  typedef std::tr1::unordered_map<std::string, int> RemoteCache;
   typedef std::vector<std::vector<Talk>*> TmpPoolTalks;
 
  public:
@@ -45,9 +46,16 @@ class BizProcedure {
   ucontext_t& GetCtx() { return *ctx_; }
   inline std::vector<Talk>* GetTalk();
   inline void FreeTalks();
+
+  /* service_cache_ helper */
   inline void GetFdFromServiceCache(const Service& service, int& fd, const Remote*& remote);
   inline void InsertFdIntoServiceCache(const Service& service, int fd, const Remote& remote);
   inline void InvalidFdInServiceCache(const Service& service);
+
+  /* remote_cache_ helper */
+  inline void GetFdFromRemoteCache(const std::string& remote, int& fd);
+  inline void InsertFdIntoRemoteCache(const std::string& remote, int fd);
+  inline void InvalidFdInRemoteCache(const std::string& remote);
 
   Scheduler* GetScheduler() { return scheduler_; }
   int GetIdProcedure() const { return id_procedure_; }
@@ -74,6 +82,7 @@ class BizProcedure {
 
   PoolTalks* pool_talks_;
   ServiceCache service_cache_;
+  RemoteCache remote_cache_;
   TmpPoolTalks tmp_pool_talks_;
 
   char* stack_;
@@ -158,6 +167,7 @@ void BizProcedure::GetFdFromServiceCache(const Service& service, int& fd, const 
   ServiceCache::const_iterator iter = service_cache_.find(service.no);
   if (service_cache_.end() == iter) {
     fd=0;
+    remote=NULL;
   } else {
     fd = iter->second.first;
     remote = iter->second.second;
@@ -171,6 +181,24 @@ void BizProcedure::InsertFdIntoServiceCache(const Service& service, int fd, cons
 
 void BizProcedure::InvalidFdInServiceCache(const Service& service) {
   service_cache_.erase(service.no);
+}
+
+void BizProcedure::GetFdFromRemoteCache(const std::string& remote, int& fd) {
+  RemoteCache::const_iterator iter = remote_cache_.find(remote);
+  if (remote_cache_.end() == iter) {
+    fd=0;
+  } else {
+    fd = iter->second;
+    remote_cache_.erase(iter);
+  }
+}
+
+void BizProcedure::InsertFdIntoRemoteCache(const std::string& remote, int fd) {
+  remote_cache_.insert(std::make_pair(remote, fd));
+}
+
+void BizProcedure::InvalidFdInRemoteCache(const std::string& remote) {
+  remote_cache_.erase(remote);
 }
 
 void BizProcedure::Reset_() {

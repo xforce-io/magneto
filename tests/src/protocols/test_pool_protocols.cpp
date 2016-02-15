@@ -1,11 +1,12 @@
 #include "gtest/gtest.h"
 #include "../../../src/protocols/pool_protocols.h"
 
+using namespace xforce;
 using namespace xforce::magneto;
 
-namespace xforce { namespace magneto {
+namespace xforce {
 LOGGER_IMPL(xforce_logger, "magneto")
-}}
+}
 
 int main(int argc, char** argv) {
   srand(time(NULL));

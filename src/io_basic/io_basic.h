@@ -15,9 +15,13 @@ class MsgDestruct;
 class BizProcedure;
 
 class IOBasicTPD {
+ private:
+  typedef std::vector<Talk> Talks;
+
  public:
   IOBasicTPD(const Confs& confs, Agents& agents);
 
+  /* ServicesSet interface */
   int Write(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
@@ -31,13 +35,14 @@ class IOBasicTPD {
       IN time_t timeo_ms,
       OUT Responses& responses);
 
-  int Talks(
+  int ParaTalks(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
       IN const Bufs& bufs,
       IN time_t timeo_ms,
       OUT Responses& responses);
 
+  /* service interface */
   int Write(
       BizProcedure& biz_procedure, 
       const Service& service,
@@ -57,6 +62,29 @@ class IOBasicTPD {
       IN time_t timeo_ms,
       OUT ProtocolRead*& protocol_read);
 
+  /* remote interface */
+  int Write(
+      BizProcedure& biz_procedure, 
+      const Service& service,
+      const Remote& remote,
+      const Buf& buf,
+      time_t timeo_ms); 
+
+  int Read(
+      IN BizProcedure& biz_procedure, 
+      IN const Service& service,
+      IN const Remote& remote, 
+      IN time_t timeo_ms, 
+      OUT ProtocolRead*& protocol_read); 
+
+  int SimpleTalk(
+      IN BizProcedure& biz_procedure,
+      IN const Service& service,
+      IN const Remote& remote,
+      IN const Buf& buf,
+      IN time_t timeo_ms,
+      OUT ProtocolRead*& protocol_read);
+
   int WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms);
 
   inline void FreeTalks(BizProcedure& biz_procedure);
@@ -65,7 +93,26 @@ class IOBasicTPD {
 
  private: 
   bool Init_();
-  std::vector<IOBasic>* BuildIOBasics_();
+
+  std::vector<Talk>* GetTalks_(
+      BizProcedure& biz_procedure,
+      const ServicesSet& services_set,
+      Talk::Category category,
+      const Bufs* bufs,
+      time_t timeo_ms);
+
+  Talks* GetTalkForRemote_(
+      BizProcedure& biz_procedure,
+      const Service& service,
+      const Remote& remote,
+      Talk::Category category,
+      const Buf* buf,
+      time_t timeo_ms);
+
+  inline bool SendSessionAndSwap_(
+      BizProcedure& biz_procedure,
+      Talks& talks,
+      int timeo_ms);
 
  private:
   bool init_;
@@ -82,6 +129,7 @@ class IOBasic {
 
   bool Init(const Confs& confs, Agents& agents);
 
+  /* ServicesSet interface */
   inline int Write(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
@@ -95,13 +143,14 @@ class IOBasic {
       IN time_t timeo_ms,
       OUT Responses& responses);
 
-  inline int Talks(
+  inline int ParaTalks(
       IN BizProcedure& biz_procedure,
       IN const ServicesSet& services_set,
       IN const Bufs& bufs,
       IN time_t timeo_ms,
       OUT Responses& responses);
 
+  /* service interface */
   inline int Write(
       BizProcedure& biz_procedure,
       const Service& service, 
@@ -121,12 +170,35 @@ class IOBasic {
       IN time_t timeo_ms,
       OUT ProtocolRead*& protocol_read);
 
+  /* remote interface */
+  inline int Write(
+      BizProcedure& biz_procedure, 
+      const Service& service,
+      const Remote& remote,
+      const Buf& buf,
+      time_t timeo_ms); 
+
+  inline int Read(
+      IN BizProcedure& biz_procedure, 
+      IN const Service& service,
+      IN const Remote& remote, 
+      IN time_t timeo_ms, 
+      OUT ProtocolRead*& protocol_read); 
+
+  inline int SimpleTalk(
+      IN BizProcedure& biz_procedure,
+      IN const Service& service,
+      IN const Remote& remote,
+      IN const Buf& buf,
+      IN time_t timeo_ms,
+      OUT ProtocolRead*& protocol_read);
+
   inline int WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms);
 
   inline void FreeTalks(BizProcedure& biz_procedure);
 
   virtual ~IOBasic();
- 
+
  private:
   const Confs* confs_;
   Agents* agents_;
@@ -142,6 +214,21 @@ namespace xforce { namespace magneto {
 
 void IOBasicTPD::FreeTalks(BizProcedure& biz_procedure) {
   return biz_procedure.FreeTalks();
+}
+
+bool IOBasicTPD::SendSessionAndSwap_(
+    BizProcedure& biz_procedure,
+    Talks& talks,
+    int timeo_ms) {
+  tmp_msg_session_->BuildForSession(biz_procedure.GetCtx(), biz_procedure, talks, timeo_ms, ErrorNo::kOk);
+
+  if (!agents_->SendMsg(biz_procedure.GetIdProcedure(), *tmp_msg_session_)) {
+    return false;
+  }
+
+  int ret = swapcontext(&(biz_procedure.GetCtx()), &(biz_procedure.GetScheduler()->GetCtx()));
+  XFC_BUG(0!=ret)
+  return true;
 }
 
 int IOBasic::Write(
@@ -163,14 +250,14 @@ int IOBasic::Read(
   return io_basic->Read(biz_procedure, services_set, timeo_ms, responses);
 }
 
-int IOBasic::Talks(
+int IOBasic::ParaTalks(
     BizProcedure& biz_procedure,
     const ServicesSet& services_set,
     const Bufs& bufs,
     time_t timeo_ms,
     Responses& responses) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
-  return io_basic->Talks(biz_procedure, services_set, bufs, timeo_ms, responses);
+  return io_basic->ParaTalks(biz_procedure, services_set, bufs, timeo_ms, responses);
 }
 
 int IOBasic::Write(
@@ -201,7 +288,47 @@ int IOBasic::SimpleTalk(
   return io_basic->SimpleTalk(biz_procedure, service, buf, timeo_ms, protocol_read);
 }
 
-int IOBasic::WriteBack(BizProcedure& biz_procedure, const Buf& buf, time_t timeo_ms) {
+int IOBasic::Write(
+    BizProcedure& biz_procedure, 
+    const Service& service,
+    const Remote& remote,
+    const Buf& buf,
+    time_t timeo_ms) {
+  IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
+  return io_basic->Write(biz_procedure, service, remote, buf, timeo_ms);
+}
+
+int IOBasic::Read(
+    BizProcedure& biz_procedure, 
+    const Service& service,
+    const Remote& remote, 
+    time_t timeo_ms, 
+    ProtocolRead*& protocol_read) {
+  IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
+  return io_basic->Read(biz_procedure, service, remote, timeo_ms, protocol_read);
+}
+
+int IOBasic::SimpleTalk(
+    BizProcedure& biz_procedure,
+    const Service& service,
+    const Remote& remote,
+    const Buf& buf,
+    time_t timeo_ms,
+    ProtocolRead*& protocol_read) {
+  IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
+  return io_basic->SimpleTalk(
+      biz_procedure, 
+      service, 
+      remote, 
+      buf, 
+      timeo_ms, 
+      protocol_read);
+}
+
+int IOBasic::WriteBack(
+    BizProcedure& biz_procedure, 
+    const Buf& buf, 
+    time_t timeo_ms) {
   IOBasicTPD* io_basic = thread_privacy_.Get<IOBasicTPD>(0, *tmp_io_basic_);
   return io_basic->WriteBack(biz_procedure, buf, timeo_ms);
 }

@@ -14,7 +14,14 @@ bool ConfServices::Init(const std::string& filedir, const ConfNormal& conf_norma
   
   conf_normal_ = &conf_normal;
 
-  conf_services_ = JsonType::CreateConf(filedir+"/"+kFilenameServicesConf);
+  std::string filepath = filedir+"/"+kFilenameServicesConf;
+  FILE* fp = fopen(filepath.c_str(), "r");
+  if (NULL==fp) {
+    return true;
+  }
+  fclose(fp);
+
+  conf_services_ = JsonType::CreateConf(filepath);
   XFC_FAIL_HANDLE_FATAL(NULL==conf_services_ || !conf_services_->IsDict(), 
       "fail_init_service_conf dir[" << filedir.c_str() << "]")
 
@@ -151,6 +158,12 @@ bool ConfServices::BuildRemote_(const JsonType& conf, Remote& remote) {
 
   if ( !conf.IsDict() || !conf["addr"].IsStr() ) return false;
 
+  if (conf["name"].IsStr() && conf["name"].AsStr() != "") {
+    remote.name = conf["name"].AsStr();
+  } else {
+    remote.name = conf["addr"].AsStr();
+  }
+
   bool ret = remote.addr.Assign(conf["addr"].AsStr());
   if (!ret) return false;
 
@@ -185,13 +198,17 @@ bool ConfServices::BuildRemote_(const JsonType& conf, Remote& remote) {
     remote.wtimeo_ms = conf_normal_->GetWtimeoMs();
   }
 
-  iter = remotes_.find(remote);
+  iter = remotes_.find(remote.name);
   if (remotes_.end() == iter) {
-    remotes_.insert(remote);
+    remotes_.insert(std::make_pair(remote.name, remote));
     XFC_FAIL_HANDLE_FATAL(
         remotes_.size() > LocalLimits::kNumRemotes,
         "too_many_remotes[" << remotes_.size() << "|" << LocalLimits::kNumRemotes << "]")
-  }  
+  } else {
+    XFC_FAIL_HANDLE_FATAL(
+        remotes_.size() > LocalLimits::kNumRemotes,
+        "dup_remotes[" << remote.name << "]")
+  }
   return true;
 
   ERROR_HANDLE:

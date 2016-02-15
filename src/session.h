@@ -41,6 +41,20 @@ class Session {
  private:
   void ResetTalk_(Talk& talk, bool is_retry);
 
+  /*
+   * @return : 
+   *    true => succ
+   *    false=> fail
+   */
+  bool GetFdForTalk_(Talk& talk);
+
+  /*
+   * @return :
+   *    true => succ
+   *    false=> timeout happen, fail
+   */
+  bool SetTimeleftForEvent_(EventCtx& event_ctx, Talk& talk);
+
  private:
   //const
   const Confs* confs_;
@@ -66,8 +80,9 @@ bool Session::FinishTalk(bool succ, Talk& talk) {
   ++num_talks_done_;
   XFC_BUG(num_talks_done_ > talks_->size())
 
+  /* NULL == talk.remote when WriteBack */
   if (NULL != talk.remote) {
-    conns_mgr_->ReportStatus(*(talk.remote), succ);
+    conns_mgr_->ReportStatus(talk.remote->name, succ);
     if (!succ) {
       talk.fail_remotes.push_back(*(talk.remote));
     }
@@ -83,6 +98,7 @@ bool Session::FinishTalk(bool succ, Talk& talk) {
       DEBUG("retry");
       ResetTalk_(talk, true);
       if (ErrorNo::kOk == talk.error) {
+        //retry happens
         --num_talks_done_;
       } else {
         has_failure_=true;

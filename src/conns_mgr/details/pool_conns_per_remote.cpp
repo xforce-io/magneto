@@ -52,6 +52,7 @@ void PoolConnsPerRemote::Put(int fd) {
     return;
   }
 
+  /* resize expiretime_sec_ if nessesary */
   if (unlikely(fd >= SCAST<int64_t>(expiretime_sec_.size()))) {
     size_t old_size = expiretime_sec_.size();
     expiretime_sec_.resize(fd+1);
@@ -60,20 +61,16 @@ void PoolConnsPerRemote::Put(int fd) {
     }
   }
 
-  if (fds_.size() < remote_.long_conns) {
-    if (0 != expiretime_sec_[fd]) {
-      if ( expiretime_sec_[fd] > Time::GetCurrentSec(false) ) {
-        fds_.push_back(fd);
-      } else {
-        IOHelper::Close(fd);
-        expiretime_sec_[fd] = 0;
-      }
-    } else {
-      expiretime_sec_[fd] = Time::GetCurrentSec(false) + long_conn_keepalive_sec_;
+  if (0 != expiretime_sec_[fd]) {
+    if ( expiretime_sec_[fd] > Time::GetCurrentSec(false) ) {
       fds_.push_back(fd);
+    } else {
+      IOHelper::Close(fd);
+      expiretime_sec_[fd] = 0;
     }
   } else {
-    IOHelper::Close(fd);
+    expiretime_sec_[fd] = Time::GetCurrentSec(false) + long_conn_keepalive_sec_;
+    fds_.push_back(fd);
   }
   lock_fds_.Unlock();
 }
