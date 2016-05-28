@@ -1,6 +1,9 @@
 #pragma once
 
-#include "../public/common.h"
+#include "public-cpp/common.h"
+#include "public-cpp/buffer.hpp"
+#include "public-cpp/buffer.hpp"
+#include "public-cpp/io_helper.h"
 #include "../public_model.h"
 
 namespace xforce { namespace magneto {

@@ -54,6 +54,7 @@ add_custom_command(TARGET magneto
   COMMAND mkdir -p ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/rapid
   COMMAND mkdir -p ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/redis
   COMMAND mkdir -p ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/thrift
+  COMMAND mkdir -p ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/protobuf
   COMMAND mkdir -p ${MAG_INC_OUTPUT_PATH_PUBLIC_CPP}/time
 
   COMMAND cp ${MAG_SRC_DIR}/magneto.h ${MAG_INC_OUTPUT_PATH_MAGNETO}
@@ -67,8 +68,10 @@ add_custom_command(TARGET magneto
   COMMAND cp ${MAG_SRC_DIR}/protocols/redis/protocol_redis.h ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/redis/
   COMMAND cp ${MAG_SRC_DIR}/protocols/thrift/protocol_thrift.h ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/thrift/
   COMMAND cp ${MAG_SRC_DIR}/protocols/thrift/t_simple_protocol.h ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/thrift/
+  COMMAND cp ${MAG_SRC_DIR}/protocols/protobuf/protocol_protobuf.h ${MAG_INC_OUTPUT_PATH_MAGNETO}/protocols/protobuf/
 
   COMMAND cp ${MAG_SRC_DIR_PUBLIC_CPP}/common.h ${MAG_INC_OUTPUT_PATH_PUBLIC_CPP}
+  COMMAND cp ${MAG_SRC_DIR_PUBLIC_CPP}/io_helper.h ${MAG_INC_OUTPUT_PATH_PUBLIC_CPP}
   COMMAND cp ${MAG_SRC_DIR_PUBLIC_CPP}/slice.hpp ${MAG_INC_OUTPUT_PATH_PUBLIC_CPP}
   COMMAND cp ${MAG_SRC_DIR_PUBLIC_CPP}/buffer.hpp ${MAG_INC_OUTPUT_PATH_PUBLIC_CPP}
   COMMAND cp ${MAG_SRC_DIR_PUBLIC_CPP}/time/time.h ${MAG_INC_OUTPUT_PATH_PUBLIC_CPP}/time/
@@ -81,4 +84,5 @@ add_custom_command(TARGET magneto
 
   #make magneto
   COMMAND cp libmagneto.a ${MAG_LIB_OUTPUT_PATH}
+  COMMAND cp ${CMAKE_SOURCE_DIR}/deps/public-cpp/lib/public-cpp/libpublic-cpp.a ${MAG_LIB_OUTPUT_PATH}
 )

@@ -447,7 +447,7 @@ std::vector<Talk>* IOBasicTPD::GetTalks_(
   return talks;
 }
 
-typename IOBasicTPD::Talks* IOBasicTPD::GetTalkForRemote_(
+IOBasicTPD::Talks* IOBasicTPD::GetTalkForRemote_(
     BizProcedure& biz_procedure,
     const Service& service,
     const Remote& remote,
